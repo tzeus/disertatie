@@ -17,12 +17,12 @@ public class AccountInfoService<K, N> {
 
 	private final AccountDataProvider<K>		accountDataProvider;
 	private final BaseTradingConfig				baseTradingConfig;
-	private final CurrentPriceInfoProvider<N>	currentPriceInfoProvider;
+	private final CurrentPriceInfoProvider<N, K>	currentPriceInfoProvider;
 	private final ProviderHelper				providerHelper;
 	private Comparator<Account<K>>				accountComparator	= new MarginAvailableComparator<K>();
 
 	public AccountInfoService(AccountDataProvider<K> accountDataProvider,
-			CurrentPriceInfoProvider<N> currentPriceInfoProvider, BaseTradingConfig baseTradingConfig,
+			CurrentPriceInfoProvider<N, K> currentPriceInfoProvider, BaseTradingConfig baseTradingConfig,
 			ProviderHelper providerHelper) {
 		this.accountDataProvider = accountDataProvider;
 		this.baseTradingConfig = baseTradingConfig;
@@ -82,7 +82,7 @@ public class AccountInfoService<K, N> {
 			System.out.println(currencyPair);
 			Map<TradeableInstrument<N>, Price<N>> priceInfoMap = this.currentPriceInfoProvider
 					.getCurrentPricesForInstruments(Lists.newArrayList(new TradeableInstrument<N>(currencyPair)),
-							(String) accountInfo.getAccountId());
+							(K) accountInfo.getAccountId());
 			if (priceInfoMap.isEmpty()) {/*
 											 * this means we got the currency
 											 * pair inverted
@@ -94,7 +94,7 @@ public class AccountInfoService<K, N> {
 				currencyPair = this.providerHelper.fromIsoFormat(accountInfo.getCurrency() + baseCurrency);
 				priceInfoMap = this.currentPriceInfoProvider.getCurrentPricesForInstruments(
 						Lists.newArrayList(new TradeableInstrument<N>(currencyPair)),
-						(String) accountInfo.getAccountId());
+						(K) accountInfo.getAccountId());
 				if (priceInfoMap.isEmpty()) {// something else is wrong here
 					System.out.println("Something went wrong...");
 					return Double.MAX_VALUE;

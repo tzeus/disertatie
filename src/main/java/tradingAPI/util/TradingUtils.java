@@ -18,6 +18,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.joda.time.DateTime;
 
+import tradingAPI.trade.TradingSignal;
+
 public class TradingUtils {
 
 	private TradingUtils() {
@@ -184,4 +186,20 @@ public class TradingUtils {
 		String responseString = EntityUtils.toString(entity, "UTF-8");
 		return responseString;
 	}
+	
+	public static final int getSign(String currencyInstrument, TradingSignal side, String currency) {
+		int sign = 0;
+		
+		if (currencyInstrument.contains(currency)) {
+			String[] ccyPairs = splitInstrumentPair(currencyInstrument);
+			if ((currency.equals(ccyPairs[0]) && side == TradingSignal.LONG)
+					|| (currency.equals(ccyPairs[1]) && side == TradingSignal.SHORT)) {
+				return 1;
+			} else {
+				return -1;
+			}
+		}
+		return sign;
+	}
+
 }

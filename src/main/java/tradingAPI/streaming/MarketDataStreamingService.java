@@ -2,7 +2,9 @@ package tradingAPI.streaming;
 
 public interface MarketDataStreamingService {
 
-	void startMarketDataStreming();
-	
+	void startMarketDataStreaming();
+		
 	void stopMarketDataStreaming();
+
+	
 }

@@ -21,6 +21,8 @@ import oandaAPI.account.OandaConstants;
 import oandaAPI.account.OandaJsonKeys;
 import oandaAPI.util.OandaUtils;
 import tradingAPI.heartbeat.HeartBeatCallback;
+import tradingAPI.heartbeat.HeartBeatPayLoad;
+import tradingAPI.streaming.HeartBeatStreamingService;
 import tradingAPI.util.TradingUtils;
 
 public abstract class OandaStreamingService implements HeartBeatStreamingService {

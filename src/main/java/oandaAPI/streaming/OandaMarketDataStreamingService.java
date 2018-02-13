@@ -90,10 +90,9 @@ public class OandaMarketDataStreamingService extends OandaStreamingService imple
 							} else if (instrumentTick.get(OandaJsonKeys.TYPE.value()).equals(OandaJsonKeys.HEARTBEAT.toString())) {
 								handleHeartBeat(instrumentTick);
 							}
-							//TODO
-							/*else if (instrumentTick.containsKey(disconnect)) {
+							else {
 								handleDisconnect(line);
-							}*/
+							}
 						}
 						br.close();
 						// stream.close();
@@ -125,11 +124,11 @@ public class OandaMarketDataStreamingService extends OandaStreamingService imple
 
 	private double findPrice(JSONObject instrumentTick, String keyName) {
 		JSONArray bidArray = (JSONArray) instrumentTick.get(keyName);
-		for (Object bid : bidArray) {
-			JSONObject jsonBid = (JSONObject) bid;
-			int liquidity = Integer.valueOf((String) jsonBid.get(OandaJsonKeys.LIQUIDITY.value()));
+		for (Object bid : bidArray) {			
+			JSONObject jsonBid = (JSONObject) bid;			
+			int liquidity = (int)(long) jsonBid.get(OandaJsonKeys.LIQUIDITY.value());
 			if (liquidity > 0) {
-				return Double.valueOf((String) jsonBid.get(keyName));
+				return Double.valueOf((String) jsonBid.get(OandaJsonKeys.PRICE.value()));
 			}
 		}
 		return 0;

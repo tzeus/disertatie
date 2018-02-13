@@ -2,8 +2,18 @@ package oandaAPI.util;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.message.BasicHeader;
+import org.json.simple.JSONObject;
+
+import com.google.common.base.Preconditions;
 
 import oandaAPI.account.OandaConstants;
+import oandaAPI.events.AccountEventPayLoad;
+import oandaAPI.events.AccountEvents;
+import oandaAPI.events.OrderEventPayLoad;
+import oandaAPI.events.OrderEvents;
+import tradingAPI.events.Event;
+import tradingAPI.events.EventPayLoad;
+import tradingAPI.order.OrderType;
 import tradingAPI.util.TradingConstants;
 import tradingAPI.util.TradingUtils;
 
@@ -54,6 +64,44 @@ public class OandaUtils {
 		throw new IllegalArgumentException(
 				String.format("expected a string with length = %d beginning with %s but got %s", expectedLen,
 						TradingConstants.HASHTAG, ccy));
+	}
+
+	public static OrderType toOrderType(String type) {
+		if (OandaConstants.ORDER_MARKET.equals(type)) {
+			return OrderType.MARKET;
+		} else if (OandaConstants.ORDER_LIMIT.equals(type) || OandaConstants.ORDER_MARKET_IF_TOUCHED.equals(type)) {
+			return OrderType.LIMIT;
+		} else if (OandaConstants.STOP_LOSS.equals(type)) {
+			return OrderType.STOP_LOSS;
+		} else if (OandaConstants.TAKE_PROFIT.equals(type)) {
+			return OrderType.TAKE_PROFIT;
+		} else {
+			throw new IllegalArgumentException("Unsupported order type:" + type);
+		}
+	}
+
+	public static EventPayLoad<JSONObject> toOandaEventPayLoad(String transactionType, JSONObject payLoad) {
+		Preconditions.checkNotNull(transactionType);
+		Event evt = findAppropriateType(AccountEvents.values(), transactionType);
+		if (evt == null) {
+			evt = findAppropriateType(OrderEvents.values(), transactionType);
+			if (evt == null) {
+				return null;
+			} else {
+				return new OrderEventPayLoad((OrderEvents) evt, payLoad);
+			}
+		} else {
+			return new AccountEventPayLoad((AccountEvents) evt, payLoad);
+		}
+	}
+
+	private static final Event findAppropriateType(Event[] events, String transactionType) {
+		for (Event evt : events) {
+			if (evt.name().equals(transactionType)) {
+				return evt;
+			}
+		}
+		return null;
 	}
 
 }

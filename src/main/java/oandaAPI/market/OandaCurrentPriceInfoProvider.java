@@ -27,7 +27,7 @@ import tradingAPI.market.Price;
 import tradingAPI.util.TradingConstants;
 import tradingAPI.util.TradingUtils;
 
-public class OandaCurrentPriceInfoProvider implements CurrentPriceInfoProvider<String> {
+public class OandaCurrentPriceInfoProvider implements CurrentPriceInfoProvider<String, String> {
 
 	private static final Logger LOG = Logger.getLogger(OandaCurrentPriceInfoProvider.class);
 
@@ -61,7 +61,7 @@ public class OandaCurrentPriceInfoProvider implements CurrentPriceInfoProvider<S
 		CloseableHttpClient httpClient = getHttpClient();
 		try {
 			HttpUriRequest httpGet = new HttpGet(this.url +OandaConstants.ACCOUNTS_RESOURCE
-					+ TradingConstants.FWD_SLASH+accountID+TradingConstants.FWD_SLASH+OandaConstants.PRICES_RESOURCE
+					+ TradingConstants.FWD_SLASH+accountID+OandaConstants.PRICES
 					+ "?instruments=" + instrumentCsv.toString());
 			httpGet.setHeader(this.authHeader);
 			httpGet.setHeader(OandaConstants.UNIX_DATETIME_HEADER);
@@ -71,15 +71,33 @@ public class OandaCurrentPriceInfoProvider implements CurrentPriceInfoProvider<S
 			if (strResp != StringUtils.EMPTY) {
 				Object obj = JSONValue.parse(strResp);
 				JSONObject jsonResp = (JSONObject) obj;
-				JSONArray prices = (JSONArray) jsonResp.get(OandaJsonKeys.PRICES);
+				JSONArray prices = (JSONArray) jsonResp.get(OandaJsonKeys.PRICES.value());
 				for (Object price : prices) {
 					JSONObject trade = (JSONObject) price;
-					Long priceTime = Long.parseLong(trade.get(OandaJsonKeys.TIME).toString());
+					DateTime priceTime = DateTime.parse((String) trade.get(OandaJsonKeys.TIME.value()));
 					TradeableInstrument<String> instrument = new TradeableInstrument<String>((String) trade
-							.get(OandaJsonKeys.INSTRUMENT));
-					Price<String> pi = new Price<String>(instrument, ((Number) trade.get(OandaJsonKeys.BID)).doubleValue(),
-							((Number) trade.get(OandaJsonKeys.ASK)).doubleValue(), new DateTime(TradingUtils
-									.toMillisFromNanos(priceTime)));
+							.get(OandaJsonKeys.INSTRUMENT.value()));
+					JSONArray asks = (JSONArray) trade.get(OandaJsonKeys.ASKS.value());
+					
+					double askPrice = 0;
+					for (Object askObject : asks) {
+						LOG.info(("ASK OBject:  ")+askObject.toString());
+						if((long)((JSONObject)askObject).get(OandaJsonKeys.LIQUIDITY.value())>0) {
+							askPrice = Double.valueOf((String) ((JSONObject)askObject).get(OandaJsonKeys.PRICE.value()));
+							break;
+						}
+					}
+					
+					JSONArray bids = (JSONArray) trade.get(OandaJsonKeys.BIDS.value());
+					double bidPrice = 0;
+					for (Object bidObject : bids) {
+						if((long)((JSONObject)bidObject).get(OandaJsonKeys.LIQUIDITY.value())>0) {
+							bidPrice = Double.valueOf((String) ((JSONObject)bidObject).get(OandaJsonKeys.PRICE.value()));
+							break;
+						}
+					}
+					
+					Price<String> pi = new Price<String>(instrument, bidPrice, askPrice, priceTime);
 					pricesMap.put(instrument, pi);
 				}
 			} else {
@@ -87,6 +105,7 @@ public class OandaCurrentPriceInfoProvider implements CurrentPriceInfoProvider<S
 			}
 		} catch (Exception ex) {
 			LOG.error(ex);
+			ex.printStackTrace();
 		} finally {
 			TradingUtils.closeSilently(httpClient);
 		}

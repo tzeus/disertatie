@@ -1,5 +1,7 @@
 package tradingAPI.heartbeat;
 
-public class HeartBeatCallback<T>{
+public interface HeartBeatCallback<T> {
+
+	void onHeartBeat(HeartBeatPayLoad<T> payLoad);
 
 }

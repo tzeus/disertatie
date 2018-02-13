@@ -29,7 +29,7 @@ public class AccountTest {
 
 		// initialise the dependencies
 		AccountDataProvider<String> accountDataProvider = new OandaAccountDataProviderService(url, userName, accessToken);
-		CurrentPriceInfoProvider<String> currentPriceInfoProvider = new OandaCurrentPriceInfoProvider(url, accessToken);
+		CurrentPriceInfoProvider<String, String> currentPriceInfoProvider = new OandaCurrentPriceInfoProvider(url, accessToken);
 		BaseTradingConfig tradingConfig = new BaseTradingConfig();
 		tradingConfig.setMinReserveRatio(0.05);
 		tradingConfig.setMinAmountRequired(100.00);
