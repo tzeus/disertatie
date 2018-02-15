@@ -57,7 +57,7 @@ public class EventStreamingServiceTest {
 		EventsStreamingService evtStreamingService = new OandaEventsStreamingService(url, accessToken,
 				accountDataProvider, eventCallback, heartBeatCallback, heartBeatSourceId);
 		evtStreamingService.startEventsStreaming();
-		// Run OrderExecutionServiceDemo in the next 60s
+		
 		Thread.sleep(60000L);
 		evtStreamingService.stopEventsStreaming();
 	}

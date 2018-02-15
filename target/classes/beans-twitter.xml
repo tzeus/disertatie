@@ -1,0 +1,100 @@
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:aop="http://www.springframework.org/schema/aop" xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans.xsd 
+	http://www.springframework.org/schema/context 
+	http://www.springframework.org/schema/context/spring-context.xsd 
+	http://www.springframework.org/schema/util 
+	http://www.springframework.org/schema/util/spring-util.xsd">
+	<context:annotation-config />
+	<context:property-placeholder location="classpath:auth.properties"
+		ignore-unresolvable="true" />
+	<bean id="twitter"
+		class="org.springframework.social.twitter.api.impl.TwitterTemplate">
+		<constructor-arg index="0" value="${twitter.consumerKey}" />
+		<constructor-arg index="1" value="${twitter.consumerSecret}" />
+		<constructor-arg index="2" value="${twitter.accessToken}" />
+		<constructor-arg index="3" value="${twitter.accessTokenSecret}" />
+	</bean>
+	<bean id="tradeableInstrumentList" class="java.util.ArrayList">
+		<constructor-arg index="0">
+			<list>
+				<bean class="tradingAPI.instruments.TradeableInstrument">
+					<constructor-arg index="0" value="AUD_CHF" />
+				</bean>
+				<bean class="tradingAPI.instruments.TradeableInstrument">
+					<constructor-arg index="0" value="AUD_JPY" />
+				</bean>
+			</list>
+		</constructor-arg>
+	</bean>
+	<bean id="fadeTheMoveStrategy" class="strategy.FadeTheMoveStrategy">
+		<constructor-arg index="0" ref="tradeableInstrumentList" />
+	</bean>
+	<bean id="providerHelper" class="oandaAPI.account.OandaProviderHelper" />
+	<bean id="instrumentDataProvider" class="oandaAPI.instruments.OandaInstrumentDataProviderService">
+		<constructor-arg index="0" value="${oanda.url}" />
+		<constructor-arg index="1" value="${oanda.accountId}" />
+		<constructor-arg index="2" value="${oanda.accessToken}" />
+	</bean>
+	<bean id="instrumentService" class="tradingAPI.instruments.InstrumentService">
+		<constructor-arg index="0" ref="instrumentDataProvider" />
+	</bean>
+	<bean id="fxTweeterList" class="java.util.ArrayList">
+		<constructor-arg index="0">
+			<list>
+				<value>SignalFactory</value>
+				<value>ZuluTrader101</value>
+			</list>
+		</constructor-arg>
+	</bean>
+	<bean id="startTimeLine" class="org.joda.time.DateTime">
+		<constructor-arg index="0" value="1518382800000" type="long" />
+	</bean>
+	<util:map id="tweetHandlerMap">
+		<entry key="#{fxTweeterList[0]}">
+			<bean class="twitter.SignalFactoryFXTweetHandler">
+				<constructor-arg index="0" value="#{fxTweeterList[0]}" />
+				<property name="startTime" ref="startTimeLine" />
+			</bean>
+		</entry>
+		<entry key="#{fxTweeterList[1]}">
+			<bean class="twitter.ZuluTrader101FXTweetHandler">
+				<constructor-arg index="0" value="#{fxTweeterList[1]}" />
+				<property name="startTime" ref="startTimeLine" />
+			</bean>
+		</entry>
+	</util:map>
+	<bean id="orderQueue" class="java.util.concurrent.LinkedBlockingQueue" />
+	<bean id="copyTwitterStrategy" class="strategy.CopyTwitterStrategy" />
+	<bean id="currentPriceInfoProvider" class="oandaAPI.market.OandaCurrentPriceInfoProvider">
+		<constructor-arg index="0" value="${oanda.url}" />
+		<constructor-arg index="1" value="${oanda.accessToken}" />
+	</bean>
+	<bean id="tradingConfig" class="tradingAPI.account.TradingConfig">
+		<property name="minReserveRatio" value="0.1" />
+		<property name="maxAllowedQuantity" value="10" />
+		<property name="maxAllowedNetContracts" value="5" />
+		<property name="minAmountRequired" value="10.0" />
+		<property name="mailTo" value="${mail.to}" />
+		<property name="max10yrWmaOffset" value="0.1" />
+		<property name="fadeTheMoveJumpReqdToTrade" value="45" />
+		<property name="fadeTheMoveDistanceToTrade" value="25" />
+		<property name="fadeTheMovePipsDesired" value="10" />
+		<property name="fadeTheMovePriceExpiry" value="15" />
+	</bean>
+	<bean id="pipJumpCutOffCalculator"
+		class="tradingAPI.marketData.PipJumpCutOffCalculatorService">
+		<constructor-arg index="0">
+			<bean class="tradingAPI.instruments.TradeableInstrument">
+				<constructor-arg index="0" value="EUR_USD" />
+			</bean>
+		</constructor-arg>
+		<constructor-arg index="1" ref="currentPriceInfoProvider" />
+		<constructor-arg index="2"
+			value="#{tradingConfig.fadeTheMoveJumpReqdToTrade}" />
+		<constructor-arg index="3" ref="instrumentService" />
+	</bean>
+</beans>

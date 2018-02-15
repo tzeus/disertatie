@@ -61,10 +61,12 @@ public class OandaAccountDataProviderService implements AccountDataProvider<Stri
 			LOG.info(TradingUtils.executingRequestMsg(httpGet));
 			HttpResponse httpResponse = httpClient.execute(httpGet);
 			String strResp = TradingUtils.responseToString(httpResponse);
+			System.out.println(strResp);
 			if (strResp != StringUtils.EMPTY) {
 				Object obj = JSONValue.parse(strResp);
 				
 				JSONObject wrapper = (JSONObject) obj;
+				
 				JSONObject accountJson = (JSONObject) wrapper.get(OandaJsonKeys.ACCOUNT.value());
 				System.out.println(accountJson.toJSONString());
 				/*Parse JSON response for account information*/

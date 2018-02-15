@@ -30,7 +30,7 @@ public class OandaMarketDataStreamingService extends OandaStreamingService imple
 			HeartBeatCallback<DateTime> heartBeatCallback, String heartbeatSourceId) {
 		super(accessToken, heartBeatCallback, heartbeatSourceId);
 		this.url = url + OandaConstants.ACCOUNTS_RESOURCE + TradingConstants.FWD_SLASH + accountId
-				+ TradingConstants.FWD_SLASH + OandaConstants.PRICES_RESOURCE + "?instruments="
+				+ OandaConstants.PRICES_RESOURCE + "?instruments="
 				+ instrumentsAsCsv(instruments);
 		this.marketEventCallback = marketEventCallback;
 	}

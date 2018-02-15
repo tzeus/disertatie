@@ -45,7 +45,7 @@ public class OandaHistoricMarketDataProvider implements HistoricMarketDataProvid
 	String getFromToUrl(TradeableInstrument<String> instrument, CandleStickGranularity granularity, DateTime from,
 			DateTime to) {
 		return String.format("%s%s%s%s%s?granularity=%s&alignmentTimezone=%s&from=%s&dailyAlignment=0&to=%s&price=M",
-				this.url, OandaConstants.INSTRUMENTS_RESOURCE, TradingConstants.FWD_SLASH, instrument.getInstrument(),
+				this.url, OandaConstants.INSTRUMENTS_RESOURCE_FOR_CANDLES, TradingConstants.FWD_SLASH, instrument.getInstrument(),
 				OandaConstants.CANDLES_RESOURCE, granularity.name(), tzGMT, from.toString(),
 				to.toString());
 	}
@@ -53,20 +53,20 @@ public class OandaHistoricMarketDataProvider implements HistoricMarketDataProvid
 	String getFromCountUrl(TradeableInstrument<String> instrument, CandleStickGranularity granularity, DateTime from,
 			int count) {
 		return String.format("%s%s%s%s%s?granularity=%s&alignmentTimezone=%s&from=%s&dailyAlignment=0&price=M&count=%d",
-				this.url, OandaConstants.INSTRUMENTS_RESOURCE, TradingConstants.FWD_SLASH, instrument.getInstrument(),
+				this.url, OandaConstants.INSTRUMENTS_RESOURCE_FOR_CANDLES, TradingConstants.FWD_SLASH, instrument.getInstrument(),
 				OandaConstants.CANDLES_RESOURCE, granularity.name(), tzGMT, from.toString(), count);
 	}
 
 	String getToCountUrl(TradeableInstrument<String> instrument, CandleStickGranularity granularity, DateTime to,
 			int count) {
 		return String.format("%s%s%s%s%s?granularity=%s&alignmentTimezone=%s&to=%s&dailyAlignment=0&price=M&count=%d",
-				this.url, OandaConstants.INSTRUMENTS_RESOURCE, TradingConstants.FWD_SLASH, instrument.getInstrument(),
+				this.url, OandaConstants.INSTRUMENTS_RESOURCE_FOR_CANDLES, TradingConstants.FWD_SLASH, instrument.getInstrument(),
 				OandaConstants.CANDLES_RESOURCE, granularity.name(), tzGMT, to.toString(), count);
 	}
 
 	String getCountUrl(TradeableInstrument<String> instrument, CandleStickGranularity granularity, int count) {
 		return String.format("%s%s%s%s%s?granularity=%s&alignmentTimezone=%s&dailyAlignment=0&price=M&count=%d",
-				this.url, OandaConstants.INSTRUMENTS_RESOURCE, TradingConstants.FWD_SLASH, instrument.getInstrument(),
+				this.url, OandaConstants.INSTRUMENTS_RESOURCE_FOR_CANDLES, TradingConstants.FWD_SLASH, instrument.getInstrument(),
 				OandaConstants.CANDLES_RESOURCE, granularity.name(), tzGMT, count);
 	}
 
