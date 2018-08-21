@@ -2,10 +2,10 @@ package test;
 
 import org.apache.log4j.Logger;
 
-import oandaAPI.account.OandaAccountDataProviderService;
-import oandaAPI.marketData.OandaHistoricMarketDataProvider;
-import oandaAPI.order.OandaOrderManagementProvider;
-import oandaAPI.trade.OandaTradeManagementProvider;
+import brokerAPI.account.BrokerAccountDataProviderService;
+import brokerAPI.marketData.BrokerHistoricMarketDataProvider;
+import brokerAPI.order.BrokerOrderManagementProvider;
+import brokerAPI.trade.BrokerTradeManagementProvider;
 import tradingAPI.account.AccountDataProvider;
 import tradingAPI.account.BaseTradingConfig;
 import tradingAPI.instruments.TradeableInstrument;
@@ -36,13 +36,13 @@ public class PreValidationServiceTest {
 			String userName = args[1];
 			String accessToken = args[2];
 
-			AccountDataProvider<String> accountDataProvider = new OandaAccountDataProviderService(url, userName,
+			AccountDataProvider<String> accountDataProvider = new BrokerAccountDataProviderService(url, userName,
 					accessToken);
 
-			OrderManagementProvider<String, String, String> orderManagementProvider = new OandaOrderManagementProvider(url,
+			OrderManagementProvider<String, String, String> orderManagementProvider = new BrokerOrderManagementProvider(url,
 					accessToken, accountDataProvider);
 
-			TradeManagementProvider<String, String, String> tradeManagementProvider = new OandaTradeManagementProvider(url,
+			TradeManagementProvider<String, String, String> tradeManagementProvider = new BrokerTradeManagementProvider(url,
 					accessToken);
 
 			BaseTradingConfig tradingConfig = new BaseTradingConfig();
@@ -56,7 +56,7 @@ public class PreValidationServiceTest {
 
 			tradeInfoService.init();
 
-			HistoricMarketDataProvider<String> historicMarketDataProvider = new OandaHistoricMarketDataProvider(url,
+			HistoricMarketDataProvider<String> historicMarketDataProvider = new BrokerHistoricMarketDataProvider(url,
 					accessToken);
 
 			MovingAverageCalculationService<String> movingAverageCalculationService = new MovingAverageCalculationService<String>(

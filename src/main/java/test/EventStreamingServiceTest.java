@@ -8,9 +8,9 @@ import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
-import oandaAPI.account.OandaAccountDataProviderService;
-import oandaAPI.account.OandaJsonKeys;
-import oandaAPI.events.OandaEventsStreamingService;
+import brokerAPI.account.BrokerAccountDataProviderService;
+import brokerAPI.account.BrokerJsonKeys;
+import brokerAPI.events.BrokerEventsStreamingService;
 import tradingAPI.account.AccountDataProvider;
 import tradingAPI.events.EventCallback;
 import tradingAPI.events.EventCallbackImpl;
@@ -34,7 +34,7 @@ public class EventStreamingServiceTest {
 		@Subscribe
 		@AllowConcurrentEvents
 		public void handleEvent(EventPayLoad<JSONObject> payLoad) {
-			String transactionType = payLoad.getPayLoad().get(OandaJsonKeys.TYPE.value()).toString();
+			String transactionType = payLoad.getPayLoad().get(BrokerJsonKeys.TYPE.value()).toString();
 			LOG.info(String.format("Type:%s, payload=%s", transactionType, payLoad.getPayLoad()));
 		}
 	}
@@ -50,11 +50,11 @@ public class EventStreamingServiceTest {
 		EventBus eventBus = new EventBus();
 		eventBus.register(new EventSubscriber());
 		HeartBeatCallback<DateTime> heartBeatCallback = new HeartBeatCallbackImpl<DateTime>(eventBus);
-		AccountDataProvider<String> accountDataProvider = new OandaAccountDataProviderService(url2, userName,
+		AccountDataProvider<String> accountDataProvider = new BrokerAccountDataProviderService(url2, userName,
 				accessToken);
 		EventCallback<JSONObject> eventCallback = new EventCallbackImpl<JSONObject>(eventBus);
 
-		EventsStreamingService evtStreamingService = new OandaEventsStreamingService(url, accessToken,
+		EventsStreamingService evtStreamingService = new BrokerEventsStreamingService(url, accessToken,
 				accountDataProvider, eventCallback, heartBeatCallback, heartBeatSourceId);
 		evtStreamingService.startEventsStreaming();
 		

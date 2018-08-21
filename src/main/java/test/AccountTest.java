@@ -5,9 +5,9 @@ import java.util.Collection;
 import org.apache.log4j.BasicConfigurator;
 import org.apache.log4j.Logger;
 
-import oandaAPI.account.OandaAccountDataProviderService;
-import oandaAPI.account.OandaProviderHelper;
-import oandaAPI.market.OandaCurrentPriceInfoProvider;
+import brokerAPI.account.BrokerAccountDataProviderService;
+import brokerAPI.account.BrokerProviderHelper;
+import brokerAPI.market.BrokerCurrentPriceInfoProvider;
 import tradingAPI.account.Account;
 import tradingAPI.account.AccountDataProvider;
 import tradingAPI.account.AccountInfoService;
@@ -24,16 +24,16 @@ public class AccountTest {
 	public static void main(String[] args) {
 		BasicConfigurator.configure();
 		String url = "https://api-fxpractice.oanda.com";
-		String userName = "bagrov";
-		String accessToken = "ad636147722167721aab6cf1550624ff-9d14ce6efe8fa5f1bff7d976ae492673";
+		String userName = "toprisan";
+		String accessToken = "5f65b265e3e232fa9cdef534bc112ad3-34841ec230e5b49d758499affb6b41e7";
 
 		// initialise the dependencies
-		AccountDataProvider<String> accountDataProvider = new OandaAccountDataProviderService(url, userName, accessToken);
-		CurrentPriceInfoProvider<String, String> currentPriceInfoProvider = new OandaCurrentPriceInfoProvider(url, accessToken);
+		AccountDataProvider<String> accountDataProvider = new BrokerAccountDataProviderService(url, userName, accessToken);
+		CurrentPriceInfoProvider<String, String> currentPriceInfoProvider = new BrokerCurrentPriceInfoProvider(url, accessToken);
 		BaseTradingConfig tradingConfig = new BaseTradingConfig();
 		tradingConfig.setMinReserveRatio(0.05);
 		tradingConfig.setMinAmountRequired(100.00);
-		ProviderHelper<String> providerHelper = new OandaProviderHelper();
+		ProviderHelper<String> providerHelper = new BrokerProviderHelper();
 
 		AccountInfoService<String, String> accountInfoService = new AccountInfoService<String, String>(accountDataProvider,
 				currentPriceInfoProvider, tradingConfig, providerHelper);
@@ -48,14 +48,14 @@ public class AccountTest {
 		Account<String> sampleAccount = accounts.iterator().next();
 		final int units = 5000;
 		TradeableInstrument<String> gbpusd = new TradeableInstrument<String>("GBP_USD");
-		TradeableInstrument<String> eurgbp = new TradeableInstrument<String>("EUR_GBP");
+		TradeableInstrument<String> eurchf = new TradeableInstrument<String>("EUR_CHF");
 		double gbpusdMarginReqd = accountInfoService.calculateMarginForTrade(sampleAccount, gbpusd, units);
 		System.out.println("After GBP_USD...........................................................");
-		double eurgbpMarginReqd = accountInfoService.calculateMarginForTrade(sampleAccount, eurgbp, units);
-		System.out.println("After EUR_GBP............................................................");
+		double eurgbpMarginReqd = accountInfoService.calculateMarginForTrade(sampleAccount, eurchf, units);
+		System.out.println("After EUR_CHF............................................................");
 		LOG.info(String.format("Marging requirement for trading pair %d units of %s is %5.2f %s ", units, gbpusd
 				.getInstrument(), gbpusdMarginReqd, sampleAccount.getCurrency()));
-		LOG.info(String.format("Marging requirement for trading pair %d units of %s is %5.2f %s ", units, eurgbp
+		LOG.info(String.format("Marging requirement for trading pair %d units of %s is %5.2f %s ", units, eurchf
 				.getInstrument(), eurgbpMarginReqd, sampleAccount.getCurrency()));
 	}
 

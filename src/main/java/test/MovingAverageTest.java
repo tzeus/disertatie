@@ -5,7 +5,7 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
-import oandaAPI.marketData.OandaHistoricMarketDataProvider;
+import brokerAPI.marketData.BrokerHistoricMarketDataProvider;
 import tradingAPI.instruments.TradeableInstrument;
 import tradingAPI.marketData.CandleStickGranularity;
 import tradingAPI.marketData.HistoricMarketDataProvider;
@@ -26,7 +26,7 @@ public class MovingAverageTest {
 		usage(args);
 		final String url = args[0];
 		final String accessToken = args[1];
-		HistoricMarketDataProvider<String> historicMarketDataProvider = new OandaHistoricMarketDataProvider(url,
+		HistoricMarketDataProvider<String> historicMarketDataProvider = new BrokerHistoricMarketDataProvider(url,
 				accessToken);
 		MovingAverageCalculationService<String> movingAverageCalcService = new MovingAverageCalculationService<String>(
 				historicMarketDataProvider);

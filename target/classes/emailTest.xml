@@ -41,20 +41,20 @@
 		<property name="fadeTheMovePriceExpiry" value="15" />
 	</bean>
 	<bean id="eventEmailNotifier" class="email.EventEmailNotifier" />
-	<bean id="orderEventHandler" class="oandaAPI.events.OrderEventHandler">
+	<bean id="orderEventHandler" class="brokerAPI.events.BrokerEventHandler">
 		<constructor-arg index="0">
 			<null />
 		</constructor-arg>
 		
 	</bean>
 	<util:map id="eventEmailContentGeneratorMap" key-type="tradingAPI.events.Event">
-		<entry key="#{T(oandaAPI.events.OrderEvents).MARKET_ORDER}"
+		<entry key="#{T(brokerAPI.events.OrderEvents).MARKET_ORDER}"
 			value-ref="orderEventHandler" />
-		<entry key="#{T(oandaAPI.events.OrderEvents).ORDER_FILL}"
+		<entry key="#{T(brokerAPI.events.OrderEvents).ORDER_FILL}"
 			value-ref="orderEventHandler" />
-		<entry key="#{T(oandaAPI.events.OrderEvents).TAKE_PROFIT_ORDER}"
+		<entry key="#{T(brokerAPI.events.OrderEvents).TAKE_PROFIT_ORDER}"
 			value-ref="orderEventHandler" />
-		<entry key="#{T(oandaAPI.events.OrderEvents).STOP_LOSS_ORDER}"
+		<entry key="#{T(brokerAPI.events.OrderEvents).STOP_LOSS_ORDER}"
 			value-ref="orderEventHandler" />
 	</util:map>
 </beans>

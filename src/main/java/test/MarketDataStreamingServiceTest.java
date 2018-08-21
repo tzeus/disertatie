@@ -10,7 +10,7 @@ import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
-import oandaAPI.streaming.OandaMarketDataStreamingService;
+import brokerAPI.streaming.BrokerMarketDataStreamingService;
 import tradingAPI.heartbeat.HeartBeatCallback;
 import tradingAPI.heartbeat.HeartBeatCallbackImpl;
 import tradingAPI.heartbeat.HeartBeatPayLoad;
@@ -68,7 +68,7 @@ public class MarketDataStreamingServiceTest {
 		MarketEventCallback<String> mktEventCallback = new MarketEventHandlerImpl<String>(eventBus);
 		HeartBeatCallback<DateTime> heartBeatCallback = new HeartBeatCallbackImpl<DateTime>(eventBus);
 
-		MarketDataStreamingService mktDataStreaminService = new OandaMarketDataStreamingService(url, accessToken,
+		MarketDataStreamingService mktDataStreaminService = new BrokerMarketDataStreamingService(url, accessToken,
 				accountId, instruments, mktEventCallback, heartBeatCallback, heartbeatSourceId);
 		LOG.info("++++++++++++ Starting Market Data Streaming +++++++++++++++++++++");
 		mktDataStreaminService.startMarketDataStreaming();

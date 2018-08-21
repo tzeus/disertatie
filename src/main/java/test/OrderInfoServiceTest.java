@@ -4,8 +4,8 @@ import java.util.Collection;
 
 import org.apache.log4j.Logger;
 
-import oandaAPI.account.OandaAccountDataProviderService;
-import oandaAPI.order.OandaOrderManagementProvider;
+import brokerAPI.account.BrokerAccountDataProviderService;
+import brokerAPI.order.BrokerOrderManagementProvider;
 import tradingAPI.account.AccountDataProvider;
 import tradingAPI.instruments.TradeableInstrument;
 import tradingAPI.order.Order;
@@ -30,9 +30,9 @@ public class OrderInfoServiceTest {
 		String userName = args[1];
 		String accessToken = args[2];
 
-		AccountDataProvider<String> accountDataProvider = new OandaAccountDataProviderService(url, userName, accessToken);
+		AccountDataProvider<String> accountDataProvider = new BrokerAccountDataProviderService(url, userName, accessToken);
 
-		OrderManagementProvider<String, String, String> orderManagementProvider = new OandaOrderManagementProvider(url,
+		OrderManagementProvider<String, String, String> orderManagementProvider = new BrokerOrderManagementProvider(url,
 				accessToken, accountDataProvider);
 
 		OrderInfoService<String, String, String> orderInfoService = new OrderInfoService<String, String, String>(

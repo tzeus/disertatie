@@ -33,8 +33,8 @@
 	<bean id="fadeTheMoveStrategy" class="strategy.FadeTheMoveStrategy">
 		<constructor-arg index="0" ref="tradeableInstrumentList" />
 	</bean>
-	<bean id="providerHelper" class="oandaAPI.account.OandaProviderHelper" />
-	<bean id="instrumentDataProvider" class="oandaAPI.instruments.OandaInstrumentDataProviderService">
+	<bean id="providerHelper" class="brokerAPI.account.BrokerProviderHelper" />
+	<bean id="instrumentDataProvider" class="brokerAPI.instruments.BrokerInstrumentDataProviderService">
 		<constructor-arg index="0" value="${oanda.url}" />
 		<constructor-arg index="1" value="${oanda.accountId}" />
 		<constructor-arg index="2" value="${oanda.accessToken}" />
@@ -69,7 +69,7 @@
 	</util:map>
 	<bean id="orderQueue" class="java.util.concurrent.LinkedBlockingQueue" />
 	<bean id="copyTwitterStrategy" class="strategy.CopyTwitterStrategy" />
-	<bean id="currentPriceInfoProvider" class="oandaAPI.market.OandaCurrentPriceInfoProvider">
+	<bean id="currentPriceInfoProvider" class="brokerAPI.market.BrokerCurrentPriceInfoProvider">
 		<constructor-arg index="0" value="${oanda.url}" />
 		<constructor-arg index="1" value="${oanda.accessToken}" />
 	</bean>

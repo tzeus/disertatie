@@ -4,8 +4,8 @@ import java.util.Collection;
 
 import org.apache.log4j.Logger;
 
-import oandaAPI.account.OandaAccountDataProviderService;
-import oandaAPI.trade.OandaTradeManagementProvider;
+import brokerAPI.account.BrokerAccountDataProviderService;
+import brokerAPI.trade.BrokerTradeManagementProvider;
 import tradingAPI.account.AccountDataProvider;
 import tradingAPI.account.BaseTradingConfig;
 import tradingAPI.instruments.TradeableInstrument;
@@ -29,12 +29,12 @@ public class TradeInfoServiceTest {
 		String url = args[0];
 		String userName = args[1];
 		String accessToken = args[2];
-		AccountDataProvider<String> accountDataProvider = new OandaAccountDataProviderService(url, userName, accessToken);
+		AccountDataProvider<String> accountDataProvider = new BrokerAccountDataProviderService(url, userName, accessToken);
 		BaseTradingConfig tradingConfig = new BaseTradingConfig();
 		tradingConfig.setMinReserveRatio(0.05);
 		tradingConfig.setMinAmountRequired(100.00);
 		tradingConfig.setMaxAllowedQuantity(10);
-		TradeManagementProvider<String, String, String> tradeManagementProvider = new OandaTradeManagementProvider(url,
+		TradeManagementProvider<String, String, String> tradeManagementProvider = new BrokerTradeManagementProvider(url,
 				accessToken);
 		TradeInfoService<String, String, String> tradeInfoService = new TradeInfoService<String, String, String>(
 				tradeManagementProvider, accountDataProvider);

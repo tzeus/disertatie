@@ -2,7 +2,6 @@ package test;
 
 import java.util.Collection;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 
@@ -11,7 +10,7 @@ import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
-import oandaAPI.streaming.OandaMarketDataStreamingService;
+import brokerAPI.streaming.BrokerMarketDataStreamingService;
 import tradingAPI.heartbeat.DefaultHeartBeatService;
 import tradingAPI.heartbeat.HeartBeatCallback;
 import tradingAPI.heartbeat.HeartBeatCallbackImpl;
@@ -60,7 +59,7 @@ public class DefaultHeartBeatServiceTest {
 		MarketEventCallback<String> mktEventCallback = new MarketEventHandlerImpl<String>(eventBus);
 		HeartBeatCallback<DateTime> heartBeatCallback = new HeartBeatCallbackImpl<DateTime>(eventBus);
 
-		OandaMarketDataStreamingService mktDataStreaminService = new OandaMarketDataStreamingService(url, accessToken,
+		BrokerMarketDataStreamingService mktDataStreaminService = new BrokerMarketDataStreamingService(url, accessToken,
 				accountId, instruments, mktEventCallback, heartBeatCallback, heartbeatSourceId);
 		mktDataStreaminService.startMarketDataStreaming();
 		Collection<HeartBeatStreamingService> heartbeatstreamingLst = Lists.newArrayList();

@@ -1,13 +1,12 @@
 package test;
 
 import java.util.List;
-import java.util.TimeZone;
 
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 
-import oandaAPI.marketData.OandaHistoricMarketDataProvider;
+import brokerAPI.marketData.BrokerHistoricMarketDataProvider;
 import tradingAPI.instruments.TradeableInstrument;
 import tradingAPI.marketData.CandleStick;
 import tradingAPI.marketData.CandleStickGranularity;
@@ -28,7 +27,7 @@ public class HistoricMarketDataProviderTest {
 		usage(args);
 		final String url = args[0];
 		final String accessToken = args[1];
-		HistoricMarketDataProvider<String> historicMarketDataProvider = new OandaHistoricMarketDataProvider(url,
+		HistoricMarketDataProvider<String> historicMarketDataProvider = new BrokerHistoricMarketDataProvider(url,
 				accessToken);
 		TradeableInstrument<String> usdchf = new TradeableInstrument<String>("USD_CHF");
 		List<CandleStick<String>> candlesUsdChf = historicMarketDataProvider.getCandleSticks(usdchf,

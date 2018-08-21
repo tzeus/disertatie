@@ -2,10 +2,9 @@ package test;
 
 import java.util.Collection;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 
-import oandaAPI.instruments.OandaInstrumentDataProviderService;
+import brokerAPI.instruments.BrokerInstrumentDataProviderService;
 import tradingAPI.instruments.InstrumentDataProvider;
 import tradingAPI.instruments.InstrumentService;
 import tradingAPI.instruments.TradeableInstrument;
@@ -27,7 +26,7 @@ public class InstrumentTest {
 		String accountId = args[1];
 		String accessToken = args[2];
 
-		InstrumentDataProvider<String> instrumentDataProvider = new OandaInstrumentDataProviderService(url, accountId,
+		InstrumentDataProvider<String> instrumentDataProvider = new BrokerInstrumentDataProviderService(url, accountId,
 				accessToken);
 
 		InstrumentService<String> instrumentService = new InstrumentService<String>(instrumentDataProvider);
