@@ -25,7 +25,7 @@ public class PipJumpCutOffCalculatorService<T, K> implements PipJumpCutOffCalcul
 	private final Double								refInstrumentPip;
 	private final ReadWriteLock							lock	= new ReentrantReadWriteLock();
 	private final InstrumentService<T>					instrumentService;
-	@Value("${oanda.accountId}")
+	@Value("${broker.accountId}")
 	private K											accountId;
 
 	public PipJumpCutOffCalculatorService(TradeableInstrument<T> refInstrument,

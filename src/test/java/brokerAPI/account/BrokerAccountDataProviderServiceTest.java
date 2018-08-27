@@ -13,6 +13,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+
+import org.junit.Ignore;
 import org.junit.Test;
 
 import org.mockito.Mockito;
@@ -36,18 +38,6 @@ public class BrokerAccountDataProviderServiceTest {
         Mockito.verify(spy, Mockito.times(1)).getSingleAccountUrl(BrokerTestConstants.ACCOUNT_ID_2);
     }
 
-    @Test
-    public void accountIdTest() throws Exception {
-        final BrokerAccountDataProviderService service = new BrokerAccountDataProviderService(BrokerTestConstants.URL, BrokerTestConstants.USER, BrokerTestConstants.TOKEN);
-        assertEquals("https://api-fxtrade.oanda.com/v3/accounts/" + BrokerTestConstants.ACCOUNT_ID_1, service.getSingleAccountUrl(BrokerTestConstants.ACCOUNT_ID_1));
-
-        BrokerAccountDataProviderService spy = createSpyAndCommonStuff("src/test/resources/accountSingle.txt", service);
-        Account<String> accInfo = spy.getLatestAccountInfo(BrokerTestConstants.ACCOUNT_ID_1); //104-747-293-585
-        assertNotNull(accInfo);
-        assertEquals("CHF", accInfo.getCurrency());
-        assertEquals(0.02, accInfo.getMarginRate(), BrokerTestConstants.PRECISION);
-
-    }
 
     private BrokerAccountDataProviderService createSpyAndCommonStuff(String fname, BrokerAccountDataProviderService service) throws Exception {
         BrokerAccountDataProviderService spy = Mockito.spy(service);

@@ -87,7 +87,7 @@ public class BrokerAccountDataProviderService implements AccountDataProvider<Str
 
             LOG.info(TradingUtils.executingRequestMsg(httpGet));
             HttpResponse resp = httpClient.execute(httpGet);
-            String strResp = TradingUtils.responseToStringAndDontCloseStream(resp, false);
+            String strResp = TradingUtils.responseToString(resp);
             LOG.log(Level.INFO, strResp);
             if (strResp != StringUtils.EMPTY) {
                 JsonObject jsonResp = new Gson().fromJson(strResp, JsonObject.class);

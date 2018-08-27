@@ -35,9 +35,9 @@
 	</bean>
 	<bean id="providerHelper" class="brokerAPI.account.BrokerProviderHelper" />
 	<bean id="instrumentDataProvider" class="brokerAPI.instruments.BrokerInstrumentDataProviderService">
-		<constructor-arg index="0" value="${oanda.url}" />
-		<constructor-arg index="1" value="${oanda.accountId}" />
-		<constructor-arg index="2" value="${oanda.accessToken}" />
+		<constructor-arg index="0" value="${broker.url}" />
+		<constructor-arg index="1" value="${broker.accountId}" />
+		<constructor-arg index="2" value="${broker.accessToken}" />
 	</bean>
 	<bean id="instrumentService" class="tradingAPI.instruments.InstrumentService">
 		<constructor-arg index="0" ref="instrumentDataProvider" />
@@ -70,8 +70,8 @@
 	<bean id="orderQueue" class="java.util.concurrent.LinkedBlockingQueue" />
 	<bean id="copyTwitterStrategy" class="strategy.CopyTwitterStrategy" />
 	<bean id="currentPriceInfoProvider" class="brokerAPI.market.BrokerCurrentPriceInfoProvider">
-		<constructor-arg index="0" value="${oanda.url}" />
-		<constructor-arg index="1" value="${oanda.accessToken}" />
+		<constructor-arg index="0" value="${broker.url}" />
+		<constructor-arg index="1" value="${broker.accessToken}" />
 	</bean>
 	<bean id="tradingConfig" class="tradingAPI.account.TradingConfig">
 		<property name="minReserveRatio" value="0.1" />

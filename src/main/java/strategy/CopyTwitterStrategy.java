@@ -38,7 +38,7 @@ public class CopyTwitterStrategy<T, K> implements TweetHarvester<T> {
 	BlockingQueue<TradingDecision<T>>	orderQueue;
 	@Autowired
 	CurrentPriceInfoProvider<T, K>			currentPriceInfoProvider;
-	@Value("${oanda.accountId}")
+	@Value("${broker.accountId}")
 	private K accountId;
 	
 	private static final Logger			LOG					= Logger.getLogger(CopyTwitterStrategy.class);
