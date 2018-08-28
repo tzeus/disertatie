@@ -84,7 +84,7 @@ public class OrderController {
     }
 
     @RequestMapping(value = "/placeOrder", method = RequestMethod.POST)
-    public String placeOrder(@RequestParam(value = "units") Integer units,
+    public String placeOrder(@RequestParam(value = "units") String units,
         @RequestParam(value = "instrument") String instrument,
         @RequestParam(value = "timeInForce") String timeInForce,
         @RequestParam(value = "type") String type,
