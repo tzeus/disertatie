@@ -28,7 +28,7 @@
 			</props>
 		</property>
 	</bean>
-	<bean id="tradingConfig" class="tradingAPI.account.TradingConfig">
+	<bean id="tradingConfig" class="com.tudoreloprisan.tradingAPI.account.TradingConfig">
 		<property name="minReserveRatio" value="0.1" />
 		<property name="maxAllowedQuantity" value="10" />
 		<property name="maxAllowedNetContracts" value="5" />
@@ -40,21 +40,21 @@
 		<property name="fadeTheMovePipsDesired" value="10" />
 		<property name="fadeTheMovePriceExpiry" value="15" />
 	</bean>
-	<bean id="eventEmailNotifier" class="email.EventEmailNotifier" />
-	<bean id="orderEventHandler" class="brokerAPI.events.BrokerEventHandler">
+	<bean id="eventEmailNotifier" class="com.tudoreloprisan.email.EventEmailNotifier" />
+	<bean id="orderEventHandler" class="com.tudoreloprisan.brokerAPI.events.BrokerEventHandler">
 		<constructor-arg index="0">
 			<null />
 		</constructor-arg>
 		
 	</bean>
-	<util:map id="eventEmailContentGeneratorMap" key-type="tradingAPI.events.Event">
-		<entry key="#{T(brokerAPI.events.OrderEvents).MARKET_ORDER}"
+	<util:map id="eventEmailContentGeneratorMap" key-type="com.tudoreloprisan.tradingAPI.events.Event">
+		<entry key="#{T(com.tudoreloprisan.brokerAPI.events.OrderEvents).MARKET_ORDER}"
 			value-ref="orderEventHandler" />
-		<entry key="#{T(brokerAPI.events.OrderEvents).ORDER_FILL}"
+		<entry key="#{T(com.tudoreloprisan.brokerAPI.events.OrderEvents).ORDER_FILL}"
 			value-ref="orderEventHandler" />
-		<entry key="#{T(brokerAPI.events.OrderEvents).TAKE_PROFIT_ORDER}"
+		<entry key="#{T(com.tudoreloprisan.brokerAPI.events.OrderEvents).TAKE_PROFIT_ORDER}"
 			value-ref="orderEventHandler" />
-		<entry key="#{T(brokerAPI.events.OrderEvents).STOP_LOSS_ORDER}"
+		<entry key="#{T(com.tudoreloprisan.brokerAPI.events.OrderEvents).STOP_LOSS_ORDER}"
 			value-ref="orderEventHandler" />
 	</util:map>
 </beans>

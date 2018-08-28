@@ -21,25 +21,25 @@
 	<bean id="tradeableInstrumentList" class="java.util.ArrayList">
 		<constructor-arg index="0">
 			<list>
-				<bean class="tradingAPI.instruments.TradeableInstrument">
+				<bean class="com.tudoreloprisan.tradingAPI.instruments.TradeableInstrument">
 					<constructor-arg index="0" value="AUD_CHF" />
 				</bean>
-				<bean class="tradingAPI.instruments.TradeableInstrument">
+				<bean class="com.tudoreloprisan.tradingAPI.instruments.TradeableInstrument">
 					<constructor-arg index="0" value="AUD_JPY" />
 				</bean>
 			</list>
 		</constructor-arg>
 	</bean>
-	<bean id="fadeTheMoveStrategy" class="strategy.FadeTheMoveStrategy">
+	<bean id="fadeTheMoveStrategy" class="com.tudoreloprisan.strategy.FadeTheMoveStrategy">
 		<constructor-arg index="0" ref="tradeableInstrumentList" />
 	</bean>
-	<bean id="providerHelper" class="brokerAPI.account.BrokerProviderHelper" />
-	<bean id="instrumentDataProvider" class="brokerAPI.instruments.BrokerInstrumentDataProviderService">
+	<bean id="providerHelper" class="com.tudoreloprisan.brokerAPI.account.BrokerProviderHelper" />
+	<bean id="instrumentDataProvider" class="com.tudoreloprisan.brokerAPI.instruments.BrokerInstrumentDataProviderService">
 		<constructor-arg index="0" value="${broker.url}" />
 		<constructor-arg index="1" value="${broker.accountId}" />
 		<constructor-arg index="2" value="${broker.accessToken}" />
 	</bean>
-	<bean id="instrumentService" class="tradingAPI.instruments.InstrumentService">
+	<bean id="instrumentService" class="com.tudoreloprisan.tradingAPI.instruments.InstrumentService">
 		<constructor-arg index="0" ref="instrumentDataProvider" />
 	</bean>
 	<bean id="fxTweeterList" class="java.util.ArrayList">
@@ -55,25 +55,25 @@
 	</bean>
 	<util:map id="tweetHandlerMap">
 		<entry key="#{fxTweeterList[0]}">
-			<bean class="twitter.SignalFactoryFXTweetHandler">
+			<bean class="com.tudoreloprisan.twitter.SignalFactoryFXTweetHandler">
 				<constructor-arg index="0" value="#{fxTweeterList[0]}" />
 				<property name="startTime" ref="startTimeLine" />
 			</bean>
 		</entry>
 		<entry key="#{fxTweeterList[1]}">
-			<bean class="twitter.ZuluTrader101FXTweetHandler">
+			<bean class="com.tudoreloprisan.twitter.ZuluTrader101FXTweetHandler">
 				<constructor-arg index="0" value="#{fxTweeterList[1]}" />
 				<property name="startTime" ref="startTimeLine" />
 			</bean>
 		</entry>
 	</util:map>
 	<bean id="orderQueue" class="java.util.concurrent.LinkedBlockingQueue" />
-	<bean id="copyTwitterStrategy" class="strategy.CopyTwitterStrategy" />
-	<bean id="currentPriceInfoProvider" class="brokerAPI.market.BrokerCurrentPriceInfoProvider">
+	<bean id="copyTwitterStrategy" class="com.tudoreloprisan.strategy.CopyTwitterStrategy" />
+	<bean id="currentPriceInfoProvider" class="com.tudoreloprisan.brokerAPI.market.BrokerCurrentPriceInfoProvider">
 		<constructor-arg index="0" value="${broker.url}" />
 		<constructor-arg index="1" value="${broker.accessToken}" />
 	</bean>
-	<bean id="tradingConfig" class="tradingAPI.account.TradingConfig">
+	<bean id="tradingConfig" class="com.tudoreloprisan.tradingAPI.account.TradingConfig">
 		<property name="minReserveRatio" value="0.1" />
 		<property name="maxAllowedQuantity" value="10" />
 		<property name="maxAllowedNetContracts" value="5" />
@@ -86,9 +86,9 @@
 		<property name="fadeTheMovePriceExpiry" value="15" />
 	</bean>
 	<bean id="pipJumpCutOffCalculator"
-		class="tradingAPI.marketData.PipJumpCutOffCalculatorService">
+		class="com.tudoreloprisan.tradingAPI.marketData.PipJumpCutOffCalculatorService">
 		<constructor-arg index="0">
-			<bean class="tradingAPI.instruments.TradeableInstrument">
+			<bean class="com.tudoreloprisan.tradingAPI.instruments.TradeableInstrument">
 				<constructor-arg index="0" value="EUR_USD" />
 			</bean>
 		</constructor-arg>
