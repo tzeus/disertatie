@@ -10,7 +10,7 @@ public enum OrderEvents implements Event {
 	ORDER_CANCEL,
 	ORDER_FILL,
 	TAKE_PROFIT_ORDER,
-	STOP_LOSS_ORDER;
+	STOP_LOSS_ORDER
 	
 
 }

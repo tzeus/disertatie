@@ -26,12 +26,23 @@ import com.tudoreloprisan.tradingAPI.market.CurrentPriceInfoProvider;
 import com.tudoreloprisan.tradingAPI.market.Price;
 import com.tudoreloprisan.tradingAPI.util.TradingConstants;
 import com.tudoreloprisan.tradingAPI.util.TradingUtils;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.stereotype.Component;
 
+@PropertySource("classpath:auth.properties")
 public class BrokerCurrentPriceInfoProvider implements CurrentPriceInfoProvider<String, String> {
 
 	private static final Logger LOG = Logger.getLogger(BrokerCurrentPriceInfoProvider.class);
 
-	private final String url;
+	@Value("${broker.url}")
+	private String url;//  = env.getProperty("broker.url");
+	@Value("${broker.user}")
+	private String user;// =env.getProperty("broker.user");
+	@Value("${broker.accessToken}")
+	private String accessToken;// =env.getProperty("broker.accessToken");
+	@Value("${broker.accountId}")
+	private String accoutdId;// =env.getProperty("broker.accountId");
 	private final BasicHeader authHeader;
 
 	public BrokerCurrentPriceInfoProvider(String url, String accessToken) {

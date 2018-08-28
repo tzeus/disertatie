@@ -18,6 +18,7 @@ import com.tudoreloprisan.tradingAPI.market.CurrentPriceInfoProvider;
 import com.tudoreloprisan.tradingAPI.market.Price;
 import com.tudoreloprisan.tradingAPI.trade.TradingDecision;
 import com.tudoreloprisan.tradingAPI.trade.TradingSignal;
+import org.springframework.stereotype.Component;
 
 public class OrderExecutionService<M, N, K> implements Runnable {
 

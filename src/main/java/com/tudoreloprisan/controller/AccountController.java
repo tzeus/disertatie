@@ -35,9 +35,8 @@ public class AccountController {
     private String accoutdId;// =env.getProperty("broker.accountId");
 
     @RequestMapping(value = "/account", method = RequestMethod.GET)
-    @CrossOrigin(origins = "*") //TODO CHANGEME
+    @CrossOrigin(origins = "*") //TODO CHANGE ME
     public String getAccountDetails(){
-        String returnedValue ="";
 
         AccountDataProvider<String> accountDataProvider = new BrokerAccountDataProviderService(url, user, accessToken);
         CurrentPriceInfoProvider<String, String> currentPriceInfoProvider = new BrokerCurrentPriceInfoProvider(url, accessToken);
