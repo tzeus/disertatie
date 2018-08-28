@@ -16,7 +16,7 @@ public class Account<T> {
 	private final long		openTrades;
 	private final String	currency;
 	private final T			accountId;
-	private final String	toStr;
+	private final transient String	toStr;
 	private final int		hash;
 
 	public Account(final double totalBalance, double marginAvailable, String currency, T accountId, double marginRate) {
