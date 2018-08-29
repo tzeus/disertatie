@@ -117,6 +117,15 @@ public class OrderController {
         return cancelOrderResponse ? "Order cancelled" : "Error";
     }
 
+
+    @RequestMapping(value = "/transactions", method = RequestMethod.GET)
+    public String getTransactions() {
+        AccountDataProvider<String> accountDataProvider = new BrokerAccountDataProviderService(url, user, accessToken);
+        BrokerOrderManagementProvider orderManagementProvider = new BrokerOrderManagementProvider(url, accessToken, accountDataProvider);
+        String allTransactions = orderManagementProvider.getAllTransactions(accountId);
+        return allTransactions;
+    }
+
     @RequestMapping(value = "/deleteOrder", method = RequestMethod.PUT)
     public String deleteOrder(@RequestParam(value = "orderId") String orderId) {
         AccountDataProvider<String> accountDataProvider = new BrokerAccountDataProviderService(url, user, accessToken);
@@ -147,6 +156,9 @@ public class OrderController {
 
         return jsonOrder;
     }
+
+
+
 
     @RequestMapping(value = "/placeOrder", method = RequestMethod.POST)
     public String placeOrder(@RequestParam(value = "units") String units,

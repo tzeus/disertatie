@@ -49,6 +49,29 @@ public class BrokerOrderManagementProvider implements OrderManagementProvider<St
 		return HttpClientBuilder.create().build();
 	}
 
+	public String getAllTransactions(String accountId){
+		CloseableHttpClient httpClient = getHttpClient();
+		try {
+			HttpGet httpGet = new HttpGet(transactionsSinceIdUrl(accountId));
+			httpGet.setHeader(authHeader);
+			LOG.info(TradingUtils.executingRequestMsg(httpGet));
+			HttpResponse resp = httpClient.execute(httpGet);
+			if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
+				LOG.info(String.format("Successfully fetched transactions for account %s", accountId));
+				return TradingUtils.responseToString(resp);
+			} else {
+				LOG.warn(String.format("Could not fetch. Recd error code %d", resp
+						.getStatusLine().getStatusCode()));
+			}
+		} catch (Exception e) {
+			LOG.warn("error fetching transactions:" , e);
+		} finally {
+			TradingUtils.closeSilently(httpClient);
+		}
+		return "Error";
+
+	}
+
 	@Override
 	public boolean closeOrder(String orderId, String accountId) {
 		CloseableHttpClient httpClient = getHttpClient();
@@ -254,6 +277,13 @@ public class BrokerOrderManagementProvider implements OrderManagementProvider<St
 	String cancelOrderForAccountUrl(String accountId, String orderId) {
 		return this.url + BrokerConstants.ACCOUNTS_RESOURCE + TradingConstants.FWD_SLASH + accountId +
 				BrokerConstants.ORDERS_RESOURCE + TradingConstants.FWD_SLASH + orderId+BrokerConstants.CANCEL_RESOURCE;
+	}
+
+	public String transactionsSinceIdUrl(String accountId){
+
+		return this.url + BrokerConstants.ACCOUNTS_RESOURCE + TradingConstants.FWD_SLASH + accountId +
+				BrokerConstants.TRANSACTIONS + TradingConstants.FWD_SLASH + "sinceid?id=1";
+
 	}
 
 	@Override

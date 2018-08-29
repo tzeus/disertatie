@@ -5,9 +5,11 @@ import org.apache.http.message.BasicHeader;
 import com.tudoreloprisan.tradingAPI.util.TradingConstants;
 
 public final class BrokerConstants {
-	private BrokerConstants() {
+
+    private BrokerConstants() {
 	}
 
+	public static final String 		TRANSACTIONS 						= "/transactions";
 	public static final String		PRICES								= "/pricing";
 	public static final String		PRICES_RESOURCE						= "/pricing/stream";
 	public static final String		INSTRUMENTS_RESOURCE_FOR_CANDLES	= "/v3/instruments";
