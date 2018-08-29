@@ -8,18 +8,25 @@ public class Order<M, N> {
 	private final String units;
 	private final TradingSignal side;
 	private final OrderType type;
-	private final double takeProfit;
-	private final double stopLoss;
+	private double takeProfit;
+	private double stopLoss;
 	private N orderId;
-	private final double price;
+	private double price;
 
 	
 	public Order(TradeableInstrument<M> instrument, String units, TradingSignal side, OrderType type, double price) {
 		this(instrument, units, side, type, 0.0, 0.0, price);
 	}
+//
+//	public Order(TradeableInstrument<M> instrument, String units, TradingSignal side, OrderType type) {
+//		this(instrument, units, side, type, 0.0, 0.0);
+//	}
 
 	public Order(TradeableInstrument<M> instrument, String units, TradingSignal side, OrderType type) {
-		this(instrument, units, side, type, 0.0, 0.0);
+		this.instrument = instrument;
+		this.units = units;
+		this.side = side;
+		this.type = type;
 	}
 
 	public Order(TradeableInstrument<M> instrument, String units, TradingSignal side, OrderType type, double takeProfit,

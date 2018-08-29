@@ -119,25 +119,19 @@ public class TradingUtils {
         }
     }
 
-    public static final String responseToStringAndDontCloseStream(HttpResponse response, boolean closeStream) throws IOException {
-        HttpEntity entity = response.getEntity();
-        if (((response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) || (response.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED)) && (entity != null)) {
-            InputStream stream = entity.getContent();
-            String line;
-            BufferedReader br = new BufferedReader(new InputStreamReader(stream));
-            StringBuilder strResp = new StringBuilder();
-            while ((line = br.readLine()) != null) {
-                strResp.append(line);
-            }
-            if (closeStream) {
-                IOUtils.closeQuietly(stream);
-                IOUtils.closeQuietly(br);
-            }
-            return strResp.toString();
-        } else {
-            return StringUtils.EMPTY;
+    public static String getOrderDetails(HttpResponse resp) throws IOException {
+
+        HttpEntity entity = resp.getEntity();
+        InputStream content = entity.getContent();
+        BufferedReader br = new BufferedReader(new InputStreamReader(content));
+        StringBuilder stringBuilder = new StringBuilder();
+        String line;
+        while((line = br.readLine()) != null){
+            stringBuilder.append(line);
         }
+        return stringBuilder.toString();
     }
+
 
     /**
      * A utility method that is an alternative to having to write null and empty checks for collections at various
@@ -205,9 +199,10 @@ public class TradingUtils {
      * @throws ParseException
      * @throws IOException
      */
-    public static void printErrorMsg(HttpResponse response) throws ParseException, IOException {
+    public static String printErrorMsg(HttpResponse response) throws ParseException, IOException {
         String responseString = getResponse(response);
         System.err.println(responseString);
+        return responseString;
     }
 
     public static String getResponse(HttpResponse response) throws ParseException, IOException {

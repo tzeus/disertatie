@@ -122,7 +122,7 @@ public class BrokerTradeManagementProvider implements TradeManagementProvider<St
     }
 
     @Override
-    public Trade<String, String, String> getTradeForAccount(String tradeId, String accountId) {
+    public <T> T getTradeForAccount(String tradeId, String accountId) {
         CloseableHttpClient httpClient = getHttpClient();
         try {
             HttpUriRequest httpGet = new HttpGet(getTradeForAccountUrl(tradeId, accountId));
@@ -133,9 +133,9 @@ public class BrokerTradeManagementProvider implements TradeManagementProvider<St
             String strResp = TradingUtils.responseToString(resp);
             if (strResp != StringUtils.EMPTY) {
                 JsonObject trade = new GsonBuilder().disableHtmlEscaping().create().fromJson(strResp, JsonObject.class);
-                return parseTrade(trade, accountId);
+                return (T)parseTrade(trade, accountId);
             } else {
-                TradingUtils.printErrorMsg(resp);
+                return (T)TradingUtils.printErrorMsg(resp);
             }
         } catch (Exception ex) {
             LOG.error(String.format("error encountered whilst fetching trade %d for account %d", tradeId, accountId),
