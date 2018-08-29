@@ -158,6 +158,50 @@ public class OrderController {
         return jsonOrder;
     }
 
+    @RequestMapping(value = "/placeMarketOrder", method = RequestMethod.POST)
+    public String placeMarketOrder(@RequestParam(value = "units") String units,
+        @RequestParam(value = "timeInForce") String timeInForce,
+        @RequestParam(value = "instrument") String instrument) throws InterruptedException {
+
+        BlockingQueue<TradingDecision<String>> orderQueue = new LinkedBlockingQueue<TradingDecision<String>>();
+        AccountDataProvider<String> accountDataProvider = new BrokerAccountDataProviderService(url, user, accessToken);
+        CurrentPriceInfoProvider<String, String> currentPriceInfoProvider = new BrokerCurrentPriceInfoProvider(url, accessToken);
+        BaseTradingConfig tradingConfig = new BaseTradingConfig();
+        tradingConfig.setMinReserveRatio(0.05);
+        tradingConfig.setMinAmountRequired(100.00);
+        tradingConfig.setMaxAllowedQuantity(10);
+        ProviderHelper<String> providerHelper = new BrokerProviderHelper();
+        AccountInfoService<String, String> accountInfoService = new AccountInfoService<String, String>(accountDataProvider, currentPriceInfoProvider, tradingConfig, providerHelper);
+
+        OrderManagementProvider<String, String, String> orderManagementProvider = new BrokerOrderManagementProvider(url, accessToken, accountDataProvider);
+
+        TradeManagementProvider<String, String, String> tradeManagementProvider = new BrokerTradeManagementProvider(url, accessToken);
+
+        OrderInfoService<String, String, String> orderInfoService = new OrderInfoService<String, String, String>(orderManagementProvider);
+
+        TradeInfoService<String, String, String> tradeInfoService = new TradeInfoService<String, String, String>(tradeManagementProvider, accountDataProvider);
+
+        HistoricMarketDataProvider<String> historicMarketDataProvider = new BrokerHistoricMarketDataProvider(url, accessToken);
+
+        MovingAverageCalculationService<String> movingAverageCalculationService = new MovingAverageCalculationService<String>(historicMarketDataProvider);
+
+        PreOrderValidationService<String, String, String> preOrderValidationService = new PreOrderValidationService<String, String, String>(tradeInfoService, movingAverageCalculationService, tradingConfig, orderInfoService);
+
+        OrderExecutionService<String, String, String> orderExecService = new OrderExecutionService<String, String, String>(orderQueue, accountInfoService, orderManagementProvider, tradingConfig, preOrderValidationService,
+            currentPriceInfoProvider);
+        orderExecService.init();
+        int unit = Integer.parseInt(units);
+
+        TradingDecision<String> decision = decision = new TradingDecision<String>(new TradeableInstrument<String>(instrument), (unit < 0) ? TradingSignal.SHORT : TradingSignal.LONG);
+
+        orderQueue.offer(decision);
+        Thread.sleep(10000); // enough time to place an order
+        orderExecService.shutDown();
+
+        return "";
+
+    }
+
     @RequestMapping(value = "/placeOrder", method = RequestMethod.POST)
     public String placeOrder(@RequestParam(value = "units") String units,
         @RequestParam(value = "instrument") String instrument,
@@ -234,9 +278,6 @@ public class OrderController {
         default:
             break;
         }
-
-//              decision = new TradingDecision<String>(new TradeableInstrument<String>(instrument),
-//                              TradingSignal.valueOf(direction), Double.parseDouble(takeProfitOnFill), Double.parseDouble(stopLossOnFill), Double.parseDouble(entryPoint));
         orderQueue.offer(decision);
         Thread.sleep(10000); // enough time to place an order
         orderExecService.shutDown();
