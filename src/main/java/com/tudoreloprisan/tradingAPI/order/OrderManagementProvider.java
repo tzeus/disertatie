@@ -16,7 +16,7 @@ public interface OrderManagementProvider<M, N, K> {
 
 	Collection<Order<N, M>> pendingOrdersForAccount(K accountId);
 
-	Order<N, M> pendingOrderForAccount(M orderId, K accountId);
+	<T> T pendingOrderForAccount(M orderId, K accountId);
 
 	Collection<Order<N, M>> pendingOrdersForInstrument(TradeableInstrument<N> instrument);
 

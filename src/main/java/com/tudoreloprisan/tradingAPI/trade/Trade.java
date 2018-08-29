@@ -12,7 +12,7 @@ public class Trade<M, N, K> {
 	private final DateTime					tradeDate;
 	private final double					takeProfitPrice, executionPrice, stopLoss;
 	private final K							accountId;
-	private final String					toStr;
+	private final transient String					toStr;
 
 	public Trade(M tradeId, String units, TradingSignal side, TradeableInstrument<N> instrument, DateTime tradeDate,
 			double takeProfitPrice, double executionPrice, double stopLoss, K accountId) {

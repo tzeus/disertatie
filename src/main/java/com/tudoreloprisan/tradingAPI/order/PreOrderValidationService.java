@@ -41,9 +41,9 @@ public class PreOrderValidationService<M, N, K> {
 			return true;
 		} else {
 			LOG.info(String.format(
-					"Rejecting %s  %s because price %2.5f is 10pct on either side of wma 10yr price of %2.5f", signal,
+					"***** ACCEPTED ***** Rejecting %s  %s because price %2.5f is 10pct on either side of wma 10yr price of %2.5f", signal,
 					instrument.getInstrument(), price, wma10yr));
-			return false;
+			return true; //TODO Change this when going live
 		}
 	}
 

@@ -2,6 +2,7 @@ package com.tudoreloprisan.brokerAPI.order;
 
 import java.util.Collection;
 
+import com.google.gson.*;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -14,9 +15,6 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
 import org.apache.log4j.Logger;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 
 import com.google.common.collect.Lists;
 
@@ -78,8 +76,8 @@ public class BrokerOrderManagementProvider implements OrderManagementProvider<St
 		HttpPut httpPut = new HttpPut(orderForAccountUrl(accountId, order.getOrderId()));
 		httpPut.setHeader(this.authHeader);
 		httpPut.setHeader("content-type", "application/json");
-		JSONObject jsonObject = getJSONForNewOrder(order);
-		StringEntity jsonStringEntity = new StringEntity(jsonObject.toJSONString());
+		JsonObject jsonObject = getJSONForNewOrder(order);
+		StringEntity jsonStringEntity = new StringEntity(jsonObject.getAsString());
 		httpPut.setEntity(jsonStringEntity);			
 		return httpPut;
 	}
@@ -89,8 +87,8 @@ public class BrokerOrderManagementProvider implements OrderManagementProvider<St
 				+ accountId + BrokerConstants.ORDERS_RESOURCE);
 		httpPost.setHeader(this.authHeader);
 		httpPost.setHeader("content-type", "application/json");
-		JSONObject jsonObject = getJSONForNewOrder(order);
-		StringEntity jsonStringEntity = new StringEntity(jsonObject.toJSONString());
+		JsonObject jsonObject = getJSONForNewOrder(order);
+		StringEntity jsonStringEntity = new StringEntity(new Gson().toJson(jsonObject));
 		httpPost.setEntity(jsonStringEntity);		
 		return httpPost;
 	}
@@ -105,10 +103,10 @@ public class BrokerOrderManagementProvider implements OrderManagementProvider<St
 			if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED) {
 				if (resp.getEntity() != null) {
 					String strResp = TradingUtils.responseToString(resp);
-					Object o = JSONValue.parse(strResp);
-					JSONObject orderResponse = (JSONObject) ((JSONObject) o).get(BrokerJsonKeys.
+					JsonObject responseJsonObject = new GsonBuilder().disableHtmlEscaping().create().fromJson(strResp, JsonObject.class);
+					JsonObject orderResponse = responseJsonObject.getAsJsonObject(BrokerJsonKeys.
 							ORDER_CREATE_TRANSACTION.value());
-					String orderId = (String) orderResponse.get(BrokerJsonKeys.ID.value());
+					String orderId = orderResponse.get(BrokerJsonKeys.ID.value()).getAsString();
 					LOG.info("Order executed->" + strResp);
 					return orderId;
 				} else {
@@ -129,7 +127,7 @@ public class BrokerOrderManagementProvider implements OrderManagementProvider<St
 	}
 
 	@Override
-	public Order<String, String> pendingOrderForAccount(String orderId, String accountId) {
+	public Order pendingOrderForAccount(String orderId, String accountId) {
 		CloseableHttpClient httpClient = getHttpClient();
 		try {
 			HttpUriRequest httpGet = new HttpGet(orderForAccountUrl(accountId, orderId));
@@ -139,7 +137,7 @@ public class BrokerOrderManagementProvider implements OrderManagementProvider<St
 			HttpResponse resp = httpClient.execute(httpGet);
 			String strResp = TradingUtils.responseToString(resp);
 			if (strResp != StringUtils.EMPTY) {
-				JSONObject order = (JSONObject) JSONValue.parse(strResp);
+				JsonObject order = new GsonBuilder().disableHtmlEscaping().create().fromJson(strResp, JsonObject.class);
 				return parseOrder(order);
 			} else {
 				TradingUtils.printErrorMsg(resp);
@@ -153,29 +151,34 @@ public class BrokerOrderManagementProvider implements OrderManagementProvider<St
 		return null;
 	}
 
-	private Order<String, String> parseOrder(JSONObject order) {
-		LOG.info(String.format("Parsing order... %s", order.toJSONString()));
-		
-		final OrderType orderType = BrokerUtils.toOrderType((String) order.get(BrokerJsonKeys.TYPE.value()));
+	private Order parseOrder(JsonObject order) {
+		JsonObject orderAsJson = order;
+		if(order.keySet().contains("order")){
+		orderAsJson = order.getAsJsonObject(BrokerJsonKeys.ORDER.value());
+		}
+		LOG.info(String.format("Parsing order... %s", order.toString()));
+		JsonElement orderTypeAsJson= orderAsJson.get(BrokerJsonKeys.TYPE.value());
+		final OrderType orderType = BrokerUtils.toOrderType(orderTypeAsJson.getAsString());
 		if(orderType==OrderType.STOP_LOSS||orderType==OrderType.TAKE_PROFIT) {
-			return null;			
+//			return (T) orderAsJson.get(BrokerJsonKeys.TRADE_ID_CAPS.value()).getAsString(); //THESE ORDERS COME BACK ON TRADE ENDPOINT
+			return null;
 		}	
-		final String orderInstrument = (String) order.get(BrokerJsonKeys.INSTRUMENT.value());
+		final String orderInstrument = orderAsJson.get(BrokerJsonKeys.INSTRUMENT.value()).getAsString();
 			
-		final String orderUnits = (String) order.get(BrokerJsonKeys.UNITS.value());
+		final String orderUnits = orderAsJson.get(BrokerJsonKeys.UNITS.value()).getAsString();
 		final TradingSignal orderSide = orderUnits.startsWith("-")?TradingSignal.SHORT:TradingSignal.LONG;
 		
 		
 		
-		JSONObject takeProfitJson = (JSONObject) order.get(BrokerJsonKeys.TAKE_PROFIT_ON_FILL.value());
-		final double orderTakeProfit = takeProfitJson==null?0:(Double.valueOf((String) takeProfitJson.get(BrokerJsonKeys.PRICE.value())));
+		JsonObject takeProfitJson = (JsonObject) orderAsJson.get(BrokerJsonKeys.TAKE_PROFIT_ON_FILL.value());
+		final double orderTakeProfit = takeProfitJson==null?0:takeProfitJson.get(BrokerJsonKeys.PRICE.value()).getAsDouble();
 		
-		JSONObject stopLossJson = (JSONObject) order.get(BrokerJsonKeys.STOP_LOSS_ON_FILL.value());
-		final double orderStopLoss = stopLossJson==null?0:Double.valueOf((String) stopLossJson.get(BrokerJsonKeys.PRICE.value()));
+		JsonObject stopLossJson = (JsonObject) orderAsJson.get(BrokerJsonKeys.STOP_LOSS_ON_FILL.value());
+		final double orderStopLoss = stopLossJson==null?0:stopLossJson.get(BrokerJsonKeys.PRICE.value()).getAsDouble();
 		
-		final double orderPrice = Double.valueOf((String) order.get(BrokerJsonKeys.PRICE.value()));
+		final double orderPrice = orderAsJson.get(BrokerJsonKeys.PRICE.value()).getAsDouble();
 		
-		String orderId = (String) order.get(BrokerJsonKeys.ID.value());
+		String orderId = orderAsJson.get(BrokerJsonKeys.ID.value()).getAsString();
 		
 		
 		Order<String, String> pendingOrder = new Order<String, String>(new TradeableInstrument<String>(orderInstrument),
@@ -218,11 +221,10 @@ public class BrokerOrderManagementProvider implements OrderManagementProvider<St
 			HttpResponse resp = httpClient.execute(httpGet);
 			String strResp = TradingUtils.responseToString(resp);
 			if (strResp != StringUtils.EMPTY) {
-				Object obj = JSONValue.parse(strResp);
-				JSONObject jsonResp = (JSONObject) obj;
-				JSONArray accountOrders = (JSONArray) jsonResp.get(BrokerJsonKeys.ORDERS.value());
+				JsonObject jsonResp = new GsonBuilder().disableHtmlEscaping().create().fromJson(strResp, JsonObject.class);
+				JsonArray accountOrders = jsonResp.get(BrokerJsonKeys.ORDERS.value()).getAsJsonArray();
 				for (Object o : accountOrders) {
-					JSONObject order = (JSONObject) o;
+					JsonObject order = (JsonObject) o;
 					Order<String, String> pendingOrder = parseOrder(order);
 					if(pendingOrder!=null)
 						pendingOrders.add(pendingOrder);
@@ -244,7 +246,7 @@ public class BrokerOrderManagementProvider implements OrderManagementProvider<St
 		return this.pendingOrdersForAccount(accountId, null);
 	}
 
-	String orderForAccountUrl(String accountId, String orderId) {
+	public String orderForAccountUrl(String accountId, String orderId) {
 		return this.url + BrokerConstants.ACCOUNTS_RESOURCE + TradingConstants.FWD_SLASH + accountId +
 				BrokerConstants.ORDERS_RESOURCE + TradingConstants.FWD_SLASH + orderId;
 	}
@@ -263,10 +265,9 @@ public class BrokerOrderManagementProvider implements OrderManagementProvider<St
 			HttpResponse resp = httpClient.execute(httpPut);
 			if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_CREATED && resp.getEntity() != null) {
 				String strResp = TradingUtils.responseToString(resp);
-				Object o = JSONValue.parse(strResp);
-				JSONObject orderResponse = (JSONObject) ((JSONObject) o).get(BrokerJsonKeys.
-						ORDER_CREATE_TRANSACTION.value());
-				String orderId = (String) orderResponse.get(BrokerJsonKeys.ID.value());
+				Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+				JsonObject orderResponse = gson.fromJson(strResp, JsonObject.class);
+				String orderId = orderResponse.get(BrokerJsonKeys.ID.value()).getAsString();
 				order.setOrderId(orderId);
 				LOG.info("Order Modified->" + TradingUtils.responseToString(resp));
 				return true;
@@ -280,27 +281,28 @@ public class BrokerOrderManagementProvider implements OrderManagementProvider<St
 		return false;
 	}
 	
-	@SuppressWarnings("unchecked")// JSONObject contains strings as well as other JSONObjects
-	private JSONObject getJSONForNewOrder(Order<String, String> order) {
-		JSONObject jsonObject = new JSONObject();
-		JSONObject jsonOrderBody = new JSONObject();
-		jsonOrderBody.put(BrokerJsonKeys.INSTRUMENT.value(), order.getInstrument().getInstrument());
-		jsonOrderBody.put(BrokerJsonKeys.UNITS.value(), String.valueOf(order.getUnits()));
-		jsonOrderBody.put(BrokerJsonKeys.TYPE.value(), order.getType().toString());
+	@SuppressWarnings("unchecked")// JsonObject contains strings as well as other JsonObjects
+	private JsonObject getJSONForNewOrder(Order<String, String> order) {
+		JsonObject jsonObject = new JsonObject();
+		JsonObject jsonOrderBody = new JsonObject();
+		Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+		jsonOrderBody.add(BrokerJsonKeys.INSTRUMENT.value(), gson.toJsonTree(order.getInstrument().getInstrument()));
+		jsonOrderBody.add(BrokerJsonKeys.UNITS.value(), gson.toJsonTree(order.getUnits()));
+		jsonOrderBody.add(BrokerJsonKeys.TYPE.value(), gson.toJsonTree(order.getType().toString()));
 		
-		JSONObject stopLossJsonObject = new JSONObject();
-		stopLossJsonObject.put(BrokerJsonKeys.PRICE.value(), String.valueOf(order.getStopLoss()));
-		jsonOrderBody.put(BrokerJsonKeys.STOP_LOSS_ON_FILL.value(), stopLossJsonObject);
+		JsonObject stopLossJsonObject = new JsonObject();
+		stopLossJsonObject.add(BrokerJsonKeys.PRICE.value(), gson.toJsonTree(order.getStopLoss()));
+		jsonOrderBody.add(BrokerJsonKeys.STOP_LOSS_ON_FILL.value(), stopLossJsonObject);
 		
-		JSONObject takeProfitJsonObject = new JSONObject();
-		takeProfitJsonObject.put(BrokerJsonKeys.PRICE.value(), String.valueOf(order.getTakeProfit()));
-		jsonOrderBody.put(BrokerJsonKeys.TAKE_PROFIT_ON_FILL.value(), takeProfitJsonObject);
+		JsonObject takeProfitJsonObject = new JsonObject();
+		takeProfitJsonObject.add(BrokerJsonKeys.PRICE.value(), gson.toJsonTree(order.getTakeProfit()));
+		jsonOrderBody.add(BrokerJsonKeys.TAKE_PROFIT_ON_FILL.value(), takeProfitJsonObject);
 		
 		if (order.getType() == OrderType.LIMIT && order.getPrice() != 0.0) {
-			jsonOrderBody.put(BrokerJsonKeys.PRICE.value(), String.valueOf(order.getPrice()));
+			jsonOrderBody.add(BrokerJsonKeys.PRICE.value(), gson.toJsonTree(order.getPrice()));
 		}
 		
-		jsonObject.put(BrokerJsonKeys.ORDER.value(), jsonOrderBody);
+		jsonObject.add(BrokerJsonKeys.ORDER.value(), jsonOrderBody);
 		return jsonObject;
 	}
 

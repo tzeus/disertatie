@@ -14,8 +14,8 @@ public enum BrokerJsonKeys {
 	INTEREST("interest"), ACCOUNT_BALANCE("accountBalance"), NAME("name"), BIDS("bids"), ASKS("asks"), 
 	LIQUIDITY("liquidity"), MIDPOINT("mid"), ORDER("order"), ORDER_CREATE_TRANSACTION("orderCreateTransaction"), 
 	OPEN_TIME("openTime"), CURRENT_UNITS("currentUnits"), TAKE_PROFIT_ORDER("takeProfitOrder"), 
-	STOP_LOSS_ORDER("stopLossOrder "), TAKE_PROFIT("takeProfit"), STOP_LOSS("stopLoss");
-	
+	STOP_LOSS_ORDER("stopLossOrder"), TAKE_PROFIT("takeProfit"), STOP_LOSS("stopLoss"), TRADE_ID_CAPS("tradeID"), TRADE("trade");
+
 	private String value;
 
 	BrokerJsonKeys(String value) {

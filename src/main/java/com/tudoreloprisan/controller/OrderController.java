@@ -1,17 +1,18 @@
 /**
- *  Copyright Murex S.A.S., 2003-2018. All Rights Reserved.
- * 
- *  This software program is proprietary and confidential to Murex S.A.S and its affiliates ("Murex") and, without limiting the generality of the foregoing reservation of rights, shall not be accessed, used, reproduced or distributed without the
- *  express prior written consent of Murex and subject to the applicable Murex licensing terms. Any modification or removal of this copyright notice is expressly prohibited.
+ * Copyright Murex S.A.S., 2003-2018. All Rights Reserved.
+ * <p>
+ * This software program is proprietary and confidential to Murex S.A.S and its affiliates ("Murex") and, without limiting the generality of the foregoing reservation of rights, shall not be accessed, used, reproduced or distributed without the
+ * express prior written consent of Murex and subject to the applicable Murex licensing terms. Any modification or removal of this copyright notice is expressly prohibited.
  */
 package com.tudoreloprisan.controller;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.*;
 
 import com.tudoreloprisan.brokerAPI.account.BrokerAccountDataProviderService;
 import com.tudoreloprisan.brokerAPI.account.BrokerProviderHelper;
@@ -27,13 +28,11 @@ import com.tudoreloprisan.tradingAPI.market.CurrentPriceInfoProvider;
 import com.tudoreloprisan.tradingAPI.marketData.HistoricMarketDataProvider;
 import com.tudoreloprisan.tradingAPI.marketData.MovingAverageCalculationService;
 import com.tudoreloprisan.tradingAPI.order.*;
-import com.tudoreloprisan.tradingAPI.trade.TradeInfoService;
-import com.tudoreloprisan.tradingAPI.trade.TradeManagementProvider;
-import com.tudoreloprisan.tradingAPI.trade.TradingDecision;
-import com.tudoreloprisan.tradingAPI.trade.TradingSignal;
+import com.tudoreloprisan.tradingAPI.trade.*;
 
 import org.apache.log4j.Logger;
 
+import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -83,18 +82,83 @@ public class OrderController {
         return gson.toJson(orders);
     }
 
+    @RequestMapping(value = "/getTrade", method = RequestMethod.GET)
+    public String getTrade(@RequestParam(value = "tradeId") String tradeId){
+        BrokerTradeManagementProvider brokerTradeManagementProvider = new BrokerTradeManagementProvider(url, accessToken);
+        Trade<String, String, String> tradeForAccount = brokerTradeManagementProvider.getTradeForAccount(tradeId, accountId);
+        Gson gson = new Gson();
+        String tradeJson = gson.toJson(tradeForAccount);
+        JsonObject jsonObject = gson.fromJson(tradeJson, JsonObject.class);
+        jsonObject.addProperty("tradeDate", tradeForAccount.getTradeDate().toString());
+        return gson.toJson(jsonObject);
+    }
+
+    @RequestMapping(value = "/getTrades", method = RequestMethod.GET)
+    public String getTrades(){
+        BrokerTradeManagementProvider brokerTradeManagementProvider = new BrokerTradeManagementProvider(url, accessToken);
+        Collection<Trade<String, String, String>> tradesForAccount = brokerTradeManagementProvider.getTradesForAccount(accountId);
+        String trades = new GsonBuilder().disableHtmlEscaping().create().toJson(tradesForAccount);
+        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+        JsonArray jsonArray = gson.toJsonTree(tradesForAccount).getAsJsonArray();
+        for (int i = 0; i < jsonArray.size(); i++) {
+            jsonArray.get(i).getAsJsonObject().addProperty("tradeDate", new ArrayList<Trade>(tradesForAccount).get(i).getTradeDate().toString());
+        }
+        String tradeJson = gson.toJson(trades);
+
+        return gson.toJson(jsonArray);
+
+    }
+
+
+    @RequestMapping(value = "/closeTrade", method = RequestMethod.PUT)
+    public String closeTrade(@RequestParam(value = "tradeId") String tradeId) {
+        BrokerTradeManagementProvider  tradeManagementProvider = new BrokerTradeManagementProvider(url, accessToken);
+        boolean cancelOrderResponse = tradeManagementProvider.closeTrade(tradeId, accountId);
+        return cancelOrderResponse ? "Order cancelled" : "Error";
+    }
+
+    @RequestMapping(value = "/deleteOrder", method = RequestMethod.PUT)
+    public String deleteOrder(@RequestParam(value = "orderId") String orderId) {
+        AccountDataProvider<String> accountDataProvider = new BrokerAccountDataProviderService(url, user, accessToken);
+        OrderManagementProvider<String, String, String> orderManagementProvider = new BrokerOrderManagementProvider(url, accessToken, accountDataProvider);
+        boolean cancelOrderResponse = orderManagementProvider.closeOrder(orderId, accountId);
+        return cancelOrderResponse ? "Order cancelled" : "Error";
+    }
+
+    @RequestMapping(value = "/getOrder", method = RequestMethod.GET)
+    public String getOrderInfo(@RequestParam(value = "orderId") String orderId) {
+        AccountDataProvider<String> accountDataProvider = new BrokerAccountDataProviderService(url, user, accessToken);
+        BrokerOrderManagementProvider orderManagementProvider = new BrokerOrderManagementProvider(url, accessToken, accountDataProvider);
+        BrokerTradeManagementProvider tradeManagementProvider = new BrokerTradeManagementProvider(url, accessToken);
+        Object order = orderManagementProvider.pendingOrderForAccount(orderId, accountId);
+        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+        String jsonOrder;
+        if (order instanceof Order) {
+            jsonOrder = gson.toJson(order);
+        }else {
+            String tradeId = (String) order;
+            Trade<String, String, String> trade = tradeManagementProvider.getTradeForAccount(tradeId, accountId);
+            String tradeJson = gson.toJson(trade);
+            JsonObject jsonObject = gson.fromJson(tradeJson, JsonObject.class);
+            jsonObject.addProperty("tradeDate", trade.getTradeDate().toString());
+            jsonOrder = gson.toJson(jsonObject);
+
+        }
+
+        return jsonOrder;
+    }
+
     @RequestMapping(value = "/placeOrder", method = RequestMethod.POST)
     public String placeOrder(@RequestParam(value = "units") String units,
-        @RequestParam(value = "instrument") String instrument,
-        @RequestParam(value = "timeInForce") String timeInForce,
-        @RequestParam(value = "type") String type,
-        @RequestParam(value = "positionFill") String positionFill,
-        @RequestParam(value = "body") String body,
-        @RequestParam(value = "entryPoint") String entryPoint,
-        @RequestParam(value = "direction") String direction,
-        @RequestParam(value = "stopLossOnFill") String stopLossOnFill,
-        @RequestParam(value = "orderType") String orderType,
-        @RequestParam(value = "takeProfitOnFill") String takeProfitOnFill) throws InterruptedException {
+                             @RequestParam(value = "instrument") String instrument,
+                             @RequestParam(value = "timeInForce") String timeInForce,
+                             @RequestParam(value = "positionFill") String positionFill,
+                             @RequestParam(value = "body") String body,
+                             @RequestParam(value = "entryPoint") String entryPoint,
+                             @RequestParam(value = "direction") String direction,
+                             @RequestParam(value = "stopLossOnFill") String stopLossOnFill,
+                             @RequestParam(value = "orderType") String orderType,
+                             @RequestParam(value = "takeProfitOnFill") String takeProfitOnFill) throws InterruptedException {
 
         BlockingQueue<TradingDecision<String>> orderQueue = new LinkedBlockingQueue<TradingDecision<String>>();
 
@@ -122,43 +186,43 @@ public class OrderController {
         PreOrderValidationService<String, String, String> preOrderValidationService = new PreOrderValidationService<String, String, String>(tradeInfoService, movingAverageCalculationService, tradingConfig, orderInfoService);
 
         OrderExecutionService<String, String, String> orderExecService = new OrderExecutionService<String, String, String>(orderQueue, accountInfoService, orderManagementProvider, tradingConfig, preOrderValidationService,
-            currentPriceInfoProvider);
+                currentPriceInfoProvider);
         orderExecService.init();
         TradingDecision<String> decision = null;
         switch (OrderEvents.valueOf(orderType)) {
 
-        case MARKET_ORDER:
-            decision = new TradingDecision<String>(new TradeableInstrument<String>(instrument), TradingSignal.valueOf(direction), Double.parseDouble(takeProfitOnFill), Double.parseDouble(stopLossOnFill),
-                Double.parseDouble(entryPoint));
-            break;
+            case MARKET_ORDER:
+                decision = new TradingDecision<String>(new TradeableInstrument<String>(instrument), TradingSignal.valueOf(direction), Double.parseDouble(takeProfitOnFill), Double.parseDouble(stopLossOnFill),
+                        Double.parseDouble(entryPoint));
+                break;
 
-        case LIMIT_ORDER:
-            decision = new TradingDecision<String>(new TradeableInstrument<String>(instrument), TradingSignal.valueOf(direction), Double.parseDouble(takeProfitOnFill), Double.parseDouble(stopLossOnFill),
-                Double.parseDouble(entryPoint));
-            break;
+            case LIMIT_ORDER:
+                decision = new TradingDecision<String>(new TradeableInstrument<String>(instrument), TradingSignal.valueOf(direction), Double.parseDouble(takeProfitOnFill), Double.parseDouble(stopLossOnFill),
+                        Double.parseDouble(entryPoint));
+                break;
 
-        case TAKE_PROFIT_ORDER:
-            decision = new TradingDecision<String>(new TradeableInstrument<String>(instrument), TradingSignal.valueOf(direction), Double.parseDouble(takeProfitOnFill), Double.parseDouble(stopLossOnFill),
-                Double.parseDouble(entryPoint));
-            break;
+            case TAKE_PROFIT_ORDER:
+                decision = new TradingDecision<String>(new TradeableInstrument<String>(instrument), TradingSignal.valueOf(direction), Double.parseDouble(takeProfitOnFill), Double.parseDouble(stopLossOnFill),
+                        Double.parseDouble(entryPoint));
+                break;
 
-        case STOP_LOSS_ORDER:
-            decision = new TradingDecision<String>(new TradeableInstrument<String>(instrument), TradingSignal.valueOf(direction), Double.parseDouble(takeProfitOnFill), Double.parseDouble(stopLossOnFill),
-                Double.parseDouble(entryPoint));
-            break;
+            case STOP_LOSS_ORDER:
+                decision = new TradingDecision<String>(new TradeableInstrument<String>(instrument), TradingSignal.valueOf(direction), Double.parseDouble(takeProfitOnFill), Double.parseDouble(stopLossOnFill),
+                        Double.parseDouble(entryPoint));
+                break;
 
-        case MARKET_IF_TOUCHED_ORDER:
-            decision = new TradingDecision<String>(new TradeableInstrument<String>(instrument), TradingSignal.valueOf(direction), Double.parseDouble(takeProfitOnFill), Double.parseDouble(stopLossOnFill),
-                Double.parseDouble(entryPoint));
-            break;
+            case MARKET_IF_TOUCHED_ORDER:
+                decision = new TradingDecision<String>(new TradeableInstrument<String>(instrument), TradingSignal.valueOf(direction), Double.parseDouble(takeProfitOnFill), Double.parseDouble(stopLossOnFill),
+                        Double.parseDouble(entryPoint));
+                break;
 
-        case ORDER_FILL:
-            decision = new TradingDecision<String>(new TradeableInstrument<String>(instrument), TradingSignal.valueOf(direction), Double.parseDouble(takeProfitOnFill), Double.parseDouble(stopLossOnFill),
-                Double.parseDouble(entryPoint));
-            break;
+            case ORDER_FILL:
+                decision = new TradingDecision<String>(new TradeableInstrument<String>(instrument), TradingSignal.valueOf(direction), Double.parseDouble(takeProfitOnFill), Double.parseDouble(stopLossOnFill),
+                        Double.parseDouble(entryPoint));
+                break;
 
-        default:
-            break;
+            default:
+                break;
         }
 
 //              decision = new TradingDecision<String>(new TradeableInstrument<String>(instrument),
