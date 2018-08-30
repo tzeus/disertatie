@@ -67,6 +67,9 @@ public class OrderController {
     @Value("${broker.accountId}")
     private String accountId; // =env.getProperty("broker.accountId");
 
+    private AccountDataProvider<String> accountDataProvider = new BrokerAccountDataProviderService(url, user, accessToken);
+    OrderManagementProvider<String, String, String> orderManagementProvider = new BrokerOrderManagementProvider(url, accessToken, accountDataProvider);
+
     //~ ----------------------------------------------------------------------------------------------------------------
     //~ Methods 
     //~ ----------------------------------------------------------------------------------------------------------------
@@ -141,6 +144,7 @@ public class OrderController {
         return cancelOrderResponse ? "Order cancelled" : "Error";
     }
 
+    @SuppressWarnings("unchecked")
     @RequestMapping(value = "/getOrder", method = RequestMethod.GET)
     public String getOrderInfo(@RequestParam(value = "orderId") String orderId) {
         AccountDataProvider<String> accountDataProvider = new BrokerAccountDataProviderService(url, user, accessToken);
@@ -148,22 +152,10 @@ public class OrderController {
         BrokerTradeManagementProvider tradeManagementProvider = new BrokerTradeManagementProvider(url, accessToken);
         Object order = orderManagementProvider.pendingOrderForAccount(orderId, accountId);
         Gson gson = new GsonBuilder().disableHtmlEscaping().create();
-        String jsonOrder;
-        if (order instanceof Order) {
-            jsonOrder = gson.toJson(order);
-        } else {
-            String tradeId = (String) order;
-            Trade<String, String, String> trade = tradeManagementProvider.getTradeForAccount(tradeId, accountId);
-            String tradeJson = gson.toJson(trade);
-            JsonObject jsonObject = gson.fromJson(tradeJson, JsonObject.class);
-            jsonObject.addProperty("tradeDate", trade.getTradeDate().toString());
-            jsonOrder = gson.toJson(jsonObject);
-
-        }
-
-        return jsonOrder;
+        return gson.toJson(order);
     }
 
+    @SuppressWarnings("unchecked")
     @RequestMapping(value = "/placeMarketOrder", method = RequestMethod.POST)
     public String placeMarketOrder(@RequestParam(value = "units") String units,
                                    @RequestParam(value = "timeInForce") String timeInForce,
@@ -185,12 +177,34 @@ public class OrderController {
 
     }
 
+
+    @SuppressWarnings("unchecked")
+    @RequestMapping(value = "/placeLimitOrder", method = RequestMethod.POST)
+    public String placeMarketOrder(@RequestParam(value = "units") String units,
+                                   @RequestParam(value = "timeInForce") String timeInForce,
+                                   @RequestParam(value = "stopLoss") String stopLoss,
+                                   @RequestParam(value = "price") String price,
+                                   @RequestParam(value = "takeProfit") String takeProfit,
+                                   @RequestParam(value = "instrument") String instrument) throws InterruptedException {
+
+        AccountDataProvider<String> accountDataProvider = new BrokerAccountDataProviderService(url, user, accessToken);
+        OrderManagementProvider<String, String, String> orderManagementProvider = new BrokerOrderManagementProvider(url, accessToken, accountDataProvider);
+
+        int unit = Integer.parseInt(units);
+
+        Order order = new Order(new TradeableInstrument<String>(instrument), units.replace("-", ""),
+                (unit < 0) ? TradingSignal.SHORT : TradingSignal.LONG, OrderType.LIMIT, Double.parseDouble(takeProfit), Double.parseDouble(stopLoss), Double.parseDouble(price));
+        String orderId = orderManagementProvider.placeOrder(order, accountId);
+
+        return orderId;
+
+    }
+
     @RequestMapping(value = "/placeOrder", method = RequestMethod.POST)
     public String placeOrder(@RequestParam(value = "units") String units,
                              @RequestParam(value = "instrument") String instrument,
                              @RequestParam(value = "timeInForce") String timeInForce,
                              @RequestParam(value = "positionFill") String positionFill,
-                             @RequestParam(value = "body") String body,
                              @RequestParam(value = "entryPoint") String entryPoint,
                              @RequestParam(value = "direction") String direction,
                              @RequestParam(value = "stopLossOnFill") String stopLossOnFill,

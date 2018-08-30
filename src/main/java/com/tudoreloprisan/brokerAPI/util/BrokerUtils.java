@@ -1,5 +1,6 @@
 package com.tudoreloprisan.brokerAPI.util;
 
+import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.message.BasicHeader;
 import org.json.simple.JSONObject;
@@ -80,7 +81,7 @@ public class BrokerUtils {
 		}
 	}
 
-	public static EventPayLoad<JSONObject> toBrokerEventPayLoad(String transactionType, JSONObject payLoad) {
+	public static EventPayLoad<JsonObject> toBrokerEventPayLoad(String transactionType, JsonObject payLoad) {
 		Preconditions.checkNotNull(transactionType);
 		Event evt = findAppropriateType(AccountEvents.values(), transactionType);
 		if (evt == null) {

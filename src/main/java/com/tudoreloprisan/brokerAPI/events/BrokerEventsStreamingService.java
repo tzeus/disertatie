@@ -3,6 +3,8 @@ package com.tudoreloprisan.brokerAPI.events;
 import java.io.BufferedReader;
 import java.util.Collection;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
@@ -27,10 +29,10 @@ public class BrokerEventsStreamingService extends BrokerStreamingService impleme
 	private static final Logger					LOG	= Logger.getLogger(BrokerEventsStreamingService.class);
 	private final String						url;
 	private final AccountDataProvider<String>	accountDataProvider;
-	private final EventCallback<JSONObject>		eventCallback;
+	private final EventCallback<JsonObject>		eventCallback;
 
 	public BrokerEventsStreamingService(final String url, final String accessToken,
-										AccountDataProvider<String> accountDataProvider, EventCallback<JSONObject> eventCallback,
+										AccountDataProvider<String> accountDataProvider, EventCallback<JsonObject> eventCallback,
 										HeartBeatCallback<DateTime> heartBeatCallback, String heartBeatSourceId) {
 		super(accessToken, heartBeatCallback, heartBeatSourceId);
 		this.url = url;
@@ -70,16 +72,14 @@ public class BrokerEventsStreamingService extends BrokerStreamingService impleme
 					if (br != null) {
 						String line;
 						while ((line = br.readLine()) != null && serviceUp) {
-							
-							Object obj = JSONValue.parse(line);
-							JSONObject jsonPayLoad = (JSONObject) obj;
-							if (jsonPayLoad.get(BrokerJsonKeys.TYPE.value()).equals(BrokerJsonKeys.HEARTBEAT.toString())) {
+							JsonObject jsonPayLoad = new Gson().fromJson(line, JsonObject.class);
+							if (jsonPayLoad.get(BrokerJsonKeys.TYPE.value()).getAsString().equals(BrokerJsonKeys.HEARTBEAT.toString())) {
 								handleHeartBeat(jsonPayLoad);
 							} else {
 								
-								String transactionType = (String) jsonPayLoad.get(BrokerJsonKeys.TYPE.value());
+								String transactionType = jsonPayLoad.get(BrokerJsonKeys.TYPE.value()).getAsString();
 								
-								EventPayLoad<JSONObject> payLoad = BrokerUtils.toBrokerEventPayLoad(transactionType,
+								EventPayLoad<JsonObject> payLoad = BrokerUtils.toBrokerEventPayLoad(transactionType,
 										jsonPayLoad);
 								if (payLoad != null) {
 									eventCallback.onEvent(payLoad);

@@ -3,9 +3,14 @@ package com.tudoreloprisan.brokerAPI.streaming;
 import java.io.BufferedReader;
 import java.util.Collection;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -65,46 +70,45 @@ public class BrokerMarketDataStreamingService extends BrokerStreamingService imp
 	@Override
 	public void startMarketDataStreaming() {
 		stopMarketDataStreaming();
-		this.streamThread = new Thread(new Runnable() {
+		this.streamThread = new Thread(() -> {
+			CloseableHttpClient httpClient = getHttpClient();
+			try {
+				BufferedReader br = setUpStreamIfPossible(httpClient);
+				if (br != null) {
+					String line;
+					while ((line = br.readLine()) != null && serviceUp) {
 
-			@Override
-			public void run() {
-				CloseableHttpClient httpClient = getHttpClient();
-				try {
-					BufferedReader br = setUpStreamIfPossible(httpClient);
-					if (br != null) {
-						String line;
-						while ((line = br.readLine()) != null && serviceUp) {
-							Object obj = JSONValue.parse(line);
-							JSONObject instrumentTick = (JSONObject) obj;
-							
-							
-							if (instrumentTick.get(BrokerJsonKeys.TYPE.value()).equals(BrokerJsonKeys.PRICE.toString())) {
-								final String instrument = instrumentTick.get(BrokerJsonKeys.INSTRUMENT.value()).toString();
-								final String timeAsString = instrumentTick.get(BrokerJsonKeys.TIME.value()).toString();
-								DateTime eventTime = DateTime.parse(timeAsString);
-								final double bidPrice = findPrice(instrumentTick, BrokerJsonKeys.BIDS.value());
-								final double askPrice = findPrice(instrumentTick, BrokerJsonKeys.ASKS.value());
-								marketEventCallback.onMarketEvent(new TradeableInstrument<String>(instrument),
-										bidPrice, askPrice, eventTime);
-							} else if (instrumentTick.get(BrokerJsonKeys.TYPE.value()).equals(BrokerJsonKeys.HEARTBEAT.toString())) {
-								handleHeartBeat(instrumentTick);
-							}
-							else {
-								handleDisconnect(line);
-							}
+						JsonObject instrumentTick = new Gson().fromJson(line, JsonObject.class);
+
+
+						if (instrumentTick.get(BrokerJsonKeys.TYPE.value()).getAsString().equals(BrokerJsonKeys.PRICE.toString())) {
+							final String instrument = instrumentTick.get(BrokerJsonKeys.INSTRUMENT.value()).toString();
+							String dateTimeAsString = instrumentTick.get(BrokerJsonKeys.TIME.value()).getAsString();
+							int lastDot = dateTimeAsString.lastIndexOf('.');
+							dateTimeAsString = dateTimeAsString.substring(0, lastDot);
+							DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
+							DateTime eventTime = DateTime.parse(dateTimeAsString, formatter);
+							final double bidPrice = findPrice(instrumentTick, BrokerJsonKeys.BIDS.value());
+							final double askPrice = findPrice(instrumentTick, BrokerJsonKeys.ASKS.value());
+							marketEventCallback.onMarketEvent(new TradeableInstrument<String>(instrument),
+									bidPrice, askPrice, eventTime);
+						} else if (instrumentTick.get(BrokerJsonKeys.TYPE.value()).equals(BrokerJsonKeys.HEARTBEAT.toString())) {
+							handleHeartBeat(instrumentTick);
 						}
-						br.close();
-						// stream.close();
+						else {
+							handleDisconnect(line);
+						}
 					}
-				} catch (Exception e) {
-					LOG.error("error encountered inside market data streaming thread", e);
-				} finally {
-					serviceUp = false;
-					TradingUtils.closeSilently(httpClient);
+					br.close();
+					// stream.close();
 				}
-
+			} catch (Exception e) {
+				LOG.error("error encountered inside market data streaming thread", e);
+			} finally {
+				serviceUp = false;
+				TradingUtils.closeSilently(httpClient);
 			}
+
 		}, "BrokerMarketDataStreamingThread");
 		this.streamThread.start();
 
@@ -122,13 +126,13 @@ public class BrokerMarketDataStreamingService extends BrokerStreamingService imp
 
 	}
 
-	private double findPrice(JSONObject instrumentTick, String keyName) {
-		JSONArray bidArray = (JSONArray) instrumentTick.get(keyName);
-		for (Object bid : bidArray) {			
-			JSONObject jsonBid = (JSONObject) bid;			
-			int liquidity = (int)(long) jsonBid.get(BrokerJsonKeys.LIQUIDITY.value());
+	private double findPrice(JsonObject instrumentTick, String keyName) {
+		JsonArray bidArray = instrumentTick.get(keyName).getAsJsonArray();
+		for (Object bid : bidArray) {
+			JsonObject jsonBid = (JsonObject) bid;
+			int liquidity = jsonBid.get(BrokerJsonKeys.LIQUIDITY.value()).getAsInt();
 			if (liquidity > 0) {
-				return Double.valueOf((String) jsonBid.get(BrokerJsonKeys.PRICE.value()));
+				return jsonBid.get(BrokerJsonKeys.PRICE.value()).getAsDouble();
 			}
 		}
 		return 0;

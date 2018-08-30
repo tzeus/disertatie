@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
+import com.google.gson.JsonObject;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -15,6 +16,8 @@ import org.apache.http.message.BasicHeader;
 import org.apache.http.util.EntityUtils;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.json.simple.JSONObject;
 
 import com.tudoreloprisan.brokerAPI.account.BrokerConstants;
@@ -50,8 +53,13 @@ public abstract class BrokerStreamingService implements HeartBeatStreamingServic
 		this.authHeader = BrokerUtils.createAuthHeader(accessToken);
 	}
 
-	protected void handleHeartBeat(JSONObject streamEvent) {		
-		DateTime heartBeatTime = DateTime.parse( (String) streamEvent.get(BrokerJsonKeys.TIME.value()));
+	protected void handleHeartBeat(JsonObject streamEvent) {
+		String dateTimeAsString = streamEvent.get(BrokerJsonKeys.TIME.value()).getAsString();
+		int lastDot = dateTimeAsString.lastIndexOf('.');
+		dateTimeAsString = dateTimeAsString.substring(0, lastDot);
+		DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
+		DateTime heartBeatTime = DateTime.parse(dateTimeAsString, formatter);
+		// = DateTime.parse(streamEvent.get(BrokerJsonKeys.TIME.value()).getAsString());
 		heartBeatCallback.onHeartBeat(new HeartBeatPayLoad<DateTime>(heartBeatTime, hearbeatSourceId));
 	}
 

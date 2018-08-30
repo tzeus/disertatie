@@ -1,14 +1,13 @@
 package com.tudoreloprisan.brokerAPI.events;
 
-import org.json.simple.JSONObject;
-
+import com.google.gson.JsonObject;
 import com.tudoreloprisan.tradingAPI.events.EventPayLoad;
 
-public class OrderEventPayLoad extends EventPayLoad<JSONObject> {
+public class OrderEventPayLoad extends EventPayLoad<JsonObject> {
 
 	private final OrderEvents orderEvent;
 
-	public OrderEventPayLoad(OrderEvents event, JSONObject payLoad) {
+	public OrderEventPayLoad(OrderEvents event, JsonObject payLoad) {
 		super(event, payLoad);
 		this.orderEvent = event;
 	}

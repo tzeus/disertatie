@@ -129,7 +129,6 @@ public class BrokerOrderManagementProvider implements OrderManagementProvider<St
                     JsonObject responseJsonObject = new GsonBuilder().disableHtmlEscaping().create().fromJson(strResp, JsonObject.class);
                     JsonObject orderResponse = responseJsonObject.getAsJsonObject(BrokerJsonKeys.
                             ORDER_CREATE_TRANSACTION.value());
-                    String orderId = orderResponse.get(BrokerJsonKeys.ID.value()).getAsString();
                     LOG.info("Order executed->" + strResp);
                     return new GsonBuilder().disableHtmlEscaping().create().toJson(orderResponse);
                 } else {
@@ -139,7 +138,7 @@ public class BrokerOrderManagementProvider implements OrderManagementProvider<St
             } else {
                 LOG.info(String.format("Order not executed. http code=%d. Order pojo->%s",
                         resp.getStatusLine().getStatusCode(), order.toString()));
-                return null;
+                return TradingUtils.printErrorMsg(resp);
             }
         } catch (Exception e) {
             LOG.warn(e);

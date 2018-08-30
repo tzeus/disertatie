@@ -19,6 +19,8 @@ import com.tudoreloprisan.tradingAPI.marketData.MarketDataPayLoad;
 import com.tudoreloprisan.tradingAPI.marketData.MarketEventCallback;
 import com.tudoreloprisan.tradingAPI.marketData.MarketEventHandlerImpl;
 import com.tudoreloprisan.tradingAPI.streaming.MarketDataStreamingService;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Value;
 
 public class MarketDataStreamingServiceTest {
 	private static final Logger LOG = Logger.getLogger(MarketDataStreamingServiceTest.class);
@@ -49,13 +51,14 @@ public class MarketDataStreamingServiceTest {
 
 	}
 
-	public static void main(String[] args) throws Exception {
+	@Test
+	public void testStreamingData() throws Exception {
 
-		usageAndValidation(args);
-		final String url = args[0];
-		final String accountId = args[1];
-		final String accessToken = args[2];
-		final String heartbeatSourceId = "DEMO_MKTDATASTREAM";
+		String url = "https://stream-fxpractice.oanda.com/"; //  = env.getProperty("broker.url");
+		String user = "toprisan"; // =env.getProperty("broker.user");
+		String accessToken = "5f65b265e3e232fa9cdef534bc112ad3-34841ec230e5b49d758499affb6b41e7"; // =env.getProperty("broker.accessToken");
+		String accountId = "101-004-9126938-001"; // =env.getProperty("broker.accountId");
+		final String heartbeatSourceId = "HEARTBEAT_SERVICE_TEST";
 
 		TradeableInstrument<String> eurusd = new TradeableInstrument<String>("EUR_USD");
 		TradeableInstrument<String> gbpnzd = new TradeableInstrument<String>("GBP_NZD");

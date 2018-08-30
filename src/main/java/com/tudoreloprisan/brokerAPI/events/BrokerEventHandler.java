@@ -1,25 +1,24 @@
 package com.tudoreloprisan.brokerAPI.events;
 
-import java.util.Set;
-
-import org.joda.time.DateTime;
-import org.json.simple.JSONObject;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Sets;
 import com.google.common.eventbus.AllowConcurrentEvents;
 import com.google.common.eventbus.Subscribe;
-
+import com.google.gson.JsonObject;
+import com.tudoreloprisan.brokerAPI.account.BrokerJsonKeys;
 import com.tudoreloprisan.email.EmailContentGenerator;
 import com.tudoreloprisan.email.EmailPayLoad;
-import com.tudoreloprisan.brokerAPI.account.BrokerJsonKeys;
 import com.tudoreloprisan.tradingAPI.events.EventHandler;
 import com.tudoreloprisan.tradingAPI.events.EventPayLoad;
 import com.tudoreloprisan.tradingAPI.instruments.TradeableInstrument;
 import com.tudoreloprisan.tradingAPI.trade.TradeInfoService;
+import org.joda.time.DateTime;
+import org.json.simple.JSONObject;
+
+import java.util.Set;
 
 public class BrokerEventHandler
-		implements EventHandler<JSONObject, OrderEventPayLoad>, EmailContentGenerator<JSONObject>{
+		implements EventHandler<JsonObject, OrderEventPayLoad>, EmailContentGenerator<JSONObject>{
 	private final Set<OrderEvents>						orderEventsSupported	= Sets
 			.newHashSet(OrderEvents.ORDER_FILL);
 	private final TradeInfoService<String, String, String>	tradeInfoService;
@@ -36,9 +35,9 @@ public class BrokerEventHandler
 		if (!orderEventsSupported.contains(payLoad.getEvent())) {
 			return;
 		}
-		JSONObject jsonPayLoad = payLoad.getPayLoad();
+		JsonObject jsonPayLoad = payLoad.getPayLoad();
 
-		String accountId = (String) jsonPayLoad.get(BrokerJsonKeys.ACCOUNT_ID.value());
+		String accountId = jsonPayLoad.get(BrokerJsonKeys.ACCOUNT_ID.value()).getAsString();
 		tradeInfoService.refreshTradesForAccount(accountId);
 	}
 
