@@ -19,7 +19,7 @@ class Account extends Component {
   render(){
     return(
       <div className={classes.Account}>
-          <label style={{float: "left"}} style={{float: "left"}}>Account ID: <strong>{this.state.accountId}</strong>  </label><br />
+          <label style={{float: "left"}}>Account ID: <strong>{this.state.accountId}</strong>  </label><br />
           <label style={{float: "left"}}>Total balance: <strong>{this.state.totalBalance}</strong>  </label><br />
           <label style={{float: "left"}}>Currency: <strong>{this.state.currency}</strong>  </label><br />
           <label style={{float: "left"}}>Open trades: <strong>{this.state.openTrades} </strong>  </label><br />
