@@ -1,4 +1,8 @@
 .Orders {
   height: 500px;
-  overflow-y: scroll
+  overflow-y: scroll;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  
 }
