@@ -10,12 +10,37 @@ public class Trade<M, N, K> {
 	private final TradingSignal				side;
 	private final TradeableInstrument<N>	instrument;
 	private final DateTime					tradeDate;
-	private final double					takeProfitPrice, executionPrice, stopLoss;
-	private final K							accountId;
-	private final transient String					toStr;
+	private double					takeProfitPrice, executionPrice, stopLoss;
+	private K							accountId;
+	private transient String					toStr;
+	private String state;
+	private String realizedPL;
+	private String unrealizedPL;
+	private String financing;
+	private String initialMarginRequired;
+	private String marginUsed;
+
+
+	public Trade(M tradeId, String units, TradingSignal side, TradeableInstrument<N> instrument, DateTime tradeDate, double takeProfitPrice, double executionPrice, double stopLoss, K accountId, String state, String realizedPL, String unrealizedPL, String financing, String initialMarginRequired, String marginUsed) {
+		this.tradeId = tradeId;
+		this.units = units;
+		this.side = side;
+		this.instrument = instrument;
+		this.tradeDate = tradeDate;
+		this.takeProfitPrice = takeProfitPrice;
+		this.executionPrice = executionPrice;
+		this.stopLoss = stopLoss;
+		this.accountId = accountId;
+		this.state = state;
+		this.realizedPL = realizedPL;
+		this.unrealizedPL = unrealizedPL;
+		this.financing = financing;
+		this.initialMarginRequired = initialMarginRequired;
+		this.marginUsed = marginUsed;
+	}
 
 	public Trade(M tradeId, String units, TradingSignal side, TradeableInstrument<N> instrument, DateTime tradeDate,
-			double takeProfitPrice, double executionPrice, double stopLoss, K accountId) {
+				 double takeProfitPrice, double executionPrice, double stopLoss, K accountId) {
 		this.tradeId = tradeId;
 		this.units = units;
 		this.side = side;

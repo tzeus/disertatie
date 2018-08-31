@@ -37,6 +37,9 @@ public class OrderInfoService<M, N, K> {
 		}
 		return positionCount;
 	}
-	
-	
+
+
+	public Collection<Order<String, String>> getAllOrders(String accountId) {
+		return this.orderManagementProvider.getAllOrders(accountId);
+	}
 }

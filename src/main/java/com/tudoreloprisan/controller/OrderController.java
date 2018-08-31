@@ -68,7 +68,7 @@ public class OrderController {
     private String accountId; // =env.getProperty("broker.accountId");
 
     private AccountDataProvider<String> accountDataProvider = new BrokerAccountDataProviderService(url, user, accessToken);
-    OrderManagementProvider<String, String, String> orderManagementProvider = new BrokerOrderManagementProvider(url, accessToken, accountDataProvider);
+    //OrderManagementProvider<String, String, String> orderManagementProvider = new BrokerOrderManagementProvider(url, accessToken, accountDataProvider);
 
     //~ ----------------------------------------------------------------------------------------------------------------
     //~ Methods 
@@ -76,14 +76,31 @@ public class OrderController {
 
     @RequestMapping(value = "/getOrders", method = RequestMethod.GET)
     public String getOrders() {
-        AccountDataProvider<String> accountDataProvider = new BrokerAccountDataProviderService(url, user, accessToken);
-
         OrderManagementProvider<String, String, String> orderManagementProvider = new BrokerOrderManagementProvider(url, accessToken, accountDataProvider);
 
         OrderInfoService<String, String, String> orderInfoService = new OrderInfoService<String, String, String>(orderManagementProvider);
 
+        Collection<Order<String, String>> orders = orderInfoService.getAllOrders(accountId);
+        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+        JsonArray jsonArray = gson.toJsonTree(orders).getAsJsonArray();
+        for (int i = 0; i < jsonArray.size(); i++) {
+            jsonArray.get(i).getAsJsonObject().addProperty("createTime", new ArrayList<Order>(orders).get(i).getCreateTime().toString());
+            jsonArray.get(i).getAsJsonObject().addProperty("instrument", new ArrayList<Order>(orders).get(i).getInstrument().getInstrument());
+
+        }
+        return gson.toJson(jsonArray);
+    }
+
+    @RequestMapping(value = "/getPendingOrders", method = RequestMethod.GET)
+    public String getPendingOrders() {
+        OrderManagementProvider<String, String, String> orderManagementProvider = new BrokerOrderManagementProvider(url, accessToken, accountDataProvider);
+        OrderInfoService<String, String, String> orderInfoService = new OrderInfoService<String, String, String>(orderManagementProvider);
         Collection<Order<String, String>> orders = orderInfoService.allPendingOrders();
         Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+        JsonArray jsonArray = gson.toJsonTree(orders).getAsJsonArray();
+        for (int i = 0; i < jsonArray.size(); i++) {
+            jsonArray.get(i).getAsJsonObject().addProperty("createTime", new ArrayList<Order>(orders).get(i).getCreateTime().toString());
+        }
 
         return gson.toJson(orders);
     }
@@ -109,6 +126,22 @@ public class OrderController {
     public String getTrades() {
         BrokerTradeManagementProvider brokerTradeManagementProvider = new BrokerTradeManagementProvider(url, accessToken);
         Collection<Trade<String, String, String>> tradesForAccount = brokerTradeManagementProvider.getTradesForAccount(accountId);
+        String trades = new GsonBuilder().disableHtmlEscaping().create().toJson(tradesForAccount);
+        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+        JsonArray jsonArray = gson.toJsonTree(tradesForAccount).getAsJsonArray();
+        for (int i = 0; i < jsonArray.size(); i++) {
+            jsonArray.get(i).getAsJsonObject().addProperty("tradeDate", new ArrayList<Trade>(tradesForAccount).get(i).getTradeDate().toString());
+        }
+        String tradeJson = gson.toJson(trades);
+
+        return gson.toJson(jsonArray);
+
+    }
+
+    @RequestMapping(value = "/getOpenTrades", method = RequestMethod.GET)
+    public String getOpenTrades() {
+        BrokerTradeManagementProvider brokerTradeManagementProvider = new BrokerTradeManagementProvider(url, accessToken);
+        Collection<Trade<String, String, String>> tradesForAccount = brokerTradeManagementProvider.getOpenTradesForAccount(accountId);
         String trades = new GsonBuilder().disableHtmlEscaping().create().toJson(tradesForAccount);
         Gson gson = new GsonBuilder().disableHtmlEscaping().create();
         JsonArray jsonArray = gson.toJsonTree(tradesForAccount).getAsJsonArray();

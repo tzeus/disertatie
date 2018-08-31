@@ -17,11 +17,17 @@ public final class BrokerConstants {
 	public static final String		CANDLES_RESOURCE					= "/candles";
 	public static final String		ACCOUNTS_RESOURCE					= "/v3/accounts";
 	public static final String		ORDERS_RESOURCE						= "/orders";
+	public static final String		ORDER_STATE_PENDING					= "PENDING";
+	public static final String		ORDER_STATE_FILLED					= "FILLED";
+	public static final String		ORDER_STATE_CANCELLED				= "CANCELLED";
+	public static final String		ORDER_STATE_ALL						= "ALL";
 	public static final String		PENDING_ORDERS_RESOURCE				= "/pendingOrders";
 	public static final String		CANCEL_RESOURCE						= "/cancel";
 	public static final String		TRADES_RESOURCE						= "/trades";
+	public static final String		OPEN_TRADES_RESOURCE				= "/openTrades";
 	public static final String		TRADES_CLOSE_RESOURCE				= "/close";
 	public static final String		TRANSACTIONS_RESOURCE				= "/transactions/stream";
+
 
 	public static final double		LOT_SIZE							= 10000.00;
 	public static final String		ORDER_MARKET						= "MARKET";

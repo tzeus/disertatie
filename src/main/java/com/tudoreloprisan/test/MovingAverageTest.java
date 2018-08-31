@@ -10,8 +10,18 @@ import com.tudoreloprisan.tradingAPI.instruments.TradeableInstrument;
 import com.tudoreloprisan.tradingAPI.marketData.CandleStickGranularity;
 import com.tudoreloprisan.tradingAPI.marketData.HistoricMarketDataProvider;
 import com.tudoreloprisan.tradingAPI.marketData.MovingAverageCalculationService;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Value;
 
 public class MovingAverageTest {
+
+	private String url = "https://api-fxpractice.oanda.com/"; //  = env.getProperty("broker.url");
+	@Value("${broker.user}")
+	private String user = "toprisan"; // =env.getProperty("broker.user");
+	@Value("${broker.accessToken}")
+	private String accessToken = "5f65b265e3e232fa9cdef534bc112ad3-34841ec230e5b49d758499affb6b41e7"; // =env.getProperty("broker.accessToken");
+	@Value("${broker.accountId}")
+	private String accountId = "101-004-9126938-001"; // =env.getProperty("broker.accountId");
 
 	private static final Logger LOG = Logger.getLogger(MovingAverageTest.class);
 
@@ -22,10 +32,8 @@ public class MovingAverageTest {
 		}
 	}
 
-	public static void main(String[] args) {
-		usage(args);
-		final String url = args[0];
-		final String accessToken = args[1];
+	@Test
+	public void testMovingAverage() {
 		HistoricMarketDataProvider<String> historicMarketDataProvider = new BrokerHistoricMarketDataProvider(url,
 				accessToken);
 		MovingAverageCalculationService<String> movingAverageCalcService = new MovingAverageCalculationService<String>(

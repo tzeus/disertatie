@@ -12,6 +12,8 @@ public interface OrderManagementProvider<M, N, K> {
 
 	boolean closeOrder(M orderId, K accountId);
 
+	Collection<Order<String, String>> getAllOrders(String accountId);
+
 	Collection<Order<N, M>> allPendingOrders();
 
 	Collection<Order<N, M>> pendingOrdersForAccount(K accountId);

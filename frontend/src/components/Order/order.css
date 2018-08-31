@@ -1,0 +1,29 @@
+
+.Order {
+  margin: 20px auto;
+  width: 350px;
+  text-align: left;
+  box-shadow: 0 2px 3px#ccc;
+  border: 1px solid #eee;
+  padding: 10px;
+  box-sizing: border-box;
+  display: flow-root;
+
+}
+
+/* @media (min-width: 600px){
+  .Order {
+      width: 500px;
+  }
+} */
+.Success {
+  background-color: #5C9210;
+}
+
+.Danger {
+  background-color: #944317;
+}
+
+.Pending {
+  background-color: gray;
+}

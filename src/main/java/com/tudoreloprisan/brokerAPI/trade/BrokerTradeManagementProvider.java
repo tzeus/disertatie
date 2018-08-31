@@ -1,13 +1,19 @@
 package com.tudoreloprisan.brokerAPI.trade;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Collection;
-
+import com.google.common.collect.Lists;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.tudoreloprisan.brokerAPI.account.BrokerConstants;
+import com.tudoreloprisan.brokerAPI.account.BrokerJsonKeys;
+import com.tudoreloprisan.brokerAPI.util.BrokerUtils;
+import com.tudoreloprisan.tradingAPI.instruments.TradeableInstrument;
+import com.tudoreloprisan.tradingAPI.trade.Trade;
+import com.tudoreloprisan.tradingAPI.trade.TradeManagementProvider;
+import com.tudoreloprisan.tradingAPI.trade.TradingSignal;
+import com.tudoreloprisan.tradingAPI.util.TradingConstants;
+import com.tudoreloprisan.tradingAPI.util.TradingUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -22,19 +28,8 @@ import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.json.simple.JSONArray;
 
-import com.google.common.collect.Lists;
-
-import com.tudoreloprisan.brokerAPI.account.BrokerConstants;
-import com.tudoreloprisan.brokerAPI.account.BrokerJsonKeys;
-import com.tudoreloprisan.brokerAPI.util.BrokerUtils;
-import com.tudoreloprisan.tradingAPI.instruments.TradeableInstrument;
-import com.tudoreloprisan.tradingAPI.trade.Trade;
-import com.tudoreloprisan.tradingAPI.trade.TradeManagementProvider;
-import com.tudoreloprisan.tradingAPI.trade.TradingSignal;
-import com.tudoreloprisan.tradingAPI.util.TradingConstants;
-import com.tudoreloprisan.tradingAPI.util.TradingUtils;
+import java.util.Collection;
 
 public class BrokerTradeManagementProvider implements TradeManagementProvider<String, String, String> {
 
@@ -57,10 +52,15 @@ public class BrokerTradeManagementProvider implements TradeManagementProvider<St
                 + BrokerConstants.TRADES_RESOURCE;
     }
 
+    String getOpenTradesInfoUrl(String accountId) {
+        return this.url + BrokerConstants.ACCOUNTS_RESOURCE + TradingConstants.FWD_SLASH + accountId
+                + BrokerConstants.OPEN_TRADES_RESOURCE;
+    }
+
     private Trade<String, String, String> parseTrade(JsonObject trade, String accountId) {
         JsonObject tradeJsonObject = trade;
-        if(tradeJsonObject.keySet().contains("trade")){
-        tradeJsonObject = trade.getAsJsonObject(BrokerJsonKeys.TRADE.value());
+        if (tradeJsonObject.keySet().contains("trade")) {
+            tradeJsonObject = trade.getAsJsonObject(BrokerJsonKeys.TRADE.value());
         }
         String dateTimeAsString = tradeJsonObject.get(BrokerJsonKeys.OPEN_TIME.value()).getAsString();
         int lastDot = dateTimeAsString.lastIndexOf('.');
@@ -80,11 +80,19 @@ public class BrokerTradeManagementProvider implements TradeManagementProvider<St
 
         JsonObject stopLossObject = (JsonObject) tradeJsonObject.get(BrokerJsonKeys.STOP_LOSS_ORDER.value());
         final double tradeStopLoss = stopLossObject == null ? 0 : stopLossObject.get(BrokerJsonKeys.PRICE.value()).getAsDouble();
+        final String state = tradeJsonObject.get(BrokerJsonKeys.ORDER_STATE.value()).getAsString();
+        final String realizedPL = tradeJsonObject.get(BrokerJsonKeys.REALIZED_PL.value()).getAsString();
+        final String unRealizedPL = tradeJsonObject.get(BrokerJsonKeys.UNREALIZED_PL.value()).getAsString();
+        final String financing = tradeJsonObject.get(BrokerJsonKeys.FINANCING.value()).getAsString();
+        final String initialMarginRequired = tradeJsonObject.get(BrokerJsonKeys.INITIAL_MARGIN_REQUIRED.value()).getAsString();
+        final String marginUsed = tradeJsonObject.get(BrokerJsonKeys.MARGIN_USED.value()).getAsString();
+
 
         return new Trade<String, String, String>(tradeId, tradeUnits, tradeSignal, tradeInstrument, dateTime,
-                tradeTakeProfit, tradeExecutionPrice, tradeStopLoss, accountId);
+                tradeTakeProfit, tradeExecutionPrice, tradeStopLoss, accountId, state, realizedPL, unRealizedPL, financing, initialMarginRequired, marginUsed);
 
     }
+
 
     @Override
     public Collection<Trade<String, String, String>> getTradesForAccount(String accountId) {
@@ -92,6 +100,36 @@ public class BrokerTradeManagementProvider implements TradeManagementProvider<St
         CloseableHttpClient httpClient = getHttpClient();
         try {
             HttpUriRequest httpGet = new HttpGet(getTradesInfoUrl(accountId));
+            httpGet.setHeader(this.authHeader);
+            httpGet.setHeader(BrokerConstants.UNIX_DATETIME_HEADER);
+            LOG.info(TradingUtils.executingRequestMsg(httpGet));
+            HttpResponse resp = httpClient.execute(httpGet);
+            String strResp = TradingUtils.responseToString(resp);
+            if (strResp != StringUtils.EMPTY) {
+                JsonObject jsonResp = new GsonBuilder().disableHtmlEscaping().create().fromJson(strResp, JsonObject.class);
+                JsonArray accountTrades = jsonResp.getAsJsonArray(BrokerJsonKeys.TRADES.value());
+                for (Object accountTrade : accountTrades) {
+                    JsonObject trade = (JsonObject) accountTrade;
+                    Trade<String, String, String> tradeInfo = parseTrade(trade, accountId);
+                    allTrades.add(tradeInfo);
+                }
+            } else {
+                TradingUtils.printErrorMsg(resp);
+            }
+        } catch (Exception ex) {
+            LOG.error("error encountered whilst fetching trades for account:" + accountId, ex);
+        } finally {
+            TradingUtils.closeSilently(httpClient);
+        }
+        return allTrades;
+    }
+
+    @Override
+    public Collection<Trade<String, String, String>> getOpenTradesForAccount(String accountId) {
+        Collection<Trade<String, String, String>> allTrades = Lists.newArrayList();
+        CloseableHttpClient httpClient = getHttpClient();
+        try {
+            HttpUriRequest httpGet = new HttpGet(getOpenTradesInfoUrl(accountId));
             httpGet.setHeader(this.authHeader);
             httpGet.setHeader(BrokerConstants.UNIX_DATETIME_HEADER);
             LOG.info(TradingUtils.executingRequestMsg(httpGet));
@@ -133,9 +171,9 @@ public class BrokerTradeManagementProvider implements TradeManagementProvider<St
             String strResp = TradingUtils.responseToString(resp);
             if (strResp != StringUtils.EMPTY) {
                 JsonObject trade = new GsonBuilder().disableHtmlEscaping().create().fromJson(strResp, JsonObject.class);
-                return (T)parseTrade(trade, accountId);
+                return (T) parseTrade(trade, accountId);
             } else {
-                return (T)TradingUtils.printErrorMsg(resp);
+                return (T) TradingUtils.printErrorMsg(resp);
             }
         } catch (Exception ex) {
             LOG.error(String.format("error encountered whilst fetching trade %d for account %d", tradeId, accountId),
@@ -156,7 +194,7 @@ public class BrokerTradeManagementProvider implements TradeManagementProvider<St
         takeProfitJSON.add(BrokerJsonKeys.PRICE.value(), new Gson().toJsonTree(takeProfit));
 
         JsonObject stopLossJSON = new JsonObject();
-        stopLossJSON.add(BrokerJsonKeys.PRICE.value(),  new Gson().toJsonTree(stopLoss));
+        stopLossJSON.add(BrokerJsonKeys.PRICE.value(), new Gson().toJsonTree(stopLoss));
 
         jsonObject.add(BrokerJsonKeys.TAKE_PROFIT.value(), takeProfitJSON);
         jsonObject.add(BrokerJsonKeys.STOP_LOSS.value(), stopLossJSON);

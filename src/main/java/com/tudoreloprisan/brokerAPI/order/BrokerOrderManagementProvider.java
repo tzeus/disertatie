@@ -30,6 +30,9 @@ import com.tudoreloprisan.tradingAPI.order.OrderType;
 import com.tudoreloprisan.tradingAPI.trade.TradingSignal;
 import com.tudoreloprisan.tradingAPI.util.TradingConstants;
 import com.tudoreloprisan.tradingAPI.util.TradingUtils;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 public class BrokerOrderManagementProvider implements OrderManagementProvider<String, String, String> {
 
@@ -178,14 +181,19 @@ public class BrokerOrderManagementProvider implements OrderManagementProvider<St
         if (order.keySet().contains("order")) {
             orderAsJson = order.getAsJsonObject(BrokerJsonKeys.ORDER.value());
         }
+        String orderId = orderAsJson.get(BrokerJsonKeys.ID.value()).getAsString();
         LOG.info(String.format("Parsing order... %s", order.toString()));
         JsonElement orderTypeAsJson = orderAsJson.get(BrokerJsonKeys.TYPE.value());
         final OrderType orderType = BrokerUtils.toOrderType(orderTypeAsJson.getAsString());
-        if (orderType == OrderType.STOP_LOSS || orderType == OrderType.TAKE_PROFIT) {
-//			return (T) orderAsJson.get(BrokerJsonKeys.TRADE_ID_CAPS.value()).getAsString(); //THESE ORDERS COME BACK ON TRADE ENDPOINT
+//        if (orderType == OrderType.STOP_LOSS || orderType == OrderType.TAKE_PROFIT) {
+////			return (T) orderAsJson.get(BrokerJsonKeys.TRADE_ID_CAPS.value()).getAsString(); //THESE ORDERS COME BACK ON TRADE ENDPOINT
+//            return null;
+//        }
+        JsonElement jsonElementInstrument = orderAsJson.get(BrokerJsonKeys.INSTRUMENT.value());
+        if(jsonElementInstrument == null){
             return null;
         }
-        final String orderInstrument = orderAsJson.get(BrokerJsonKeys.INSTRUMENT.value()).getAsString();
+        final String orderInstrument = jsonElementInstrument.getAsString();
 
         final String orderUnits = orderAsJson.get(BrokerJsonKeys.UNITS.value()).getAsString();
         final TradingSignal orderSide = orderUnits.startsWith("-") ? TradingSignal.SHORT : TradingSignal.LONG;
@@ -200,11 +208,20 @@ public class BrokerOrderManagementProvider implements OrderManagementProvider<St
         JsonElement price = orderAsJson.get(BrokerJsonKeys.PRICE.value());
         final double orderPrice = price == null ? 0 : price.getAsDouble();
 
-        String orderId = orderAsJson.get(BrokerJsonKeys.ID.value()).getAsString();
 
+        String state = orderAsJson.get(BrokerJsonKeys.ORDER_STATE.value()).getAsString();
+        JsonElement jsonElementFillingTransactionId = orderAsJson.get(BrokerJsonKeys.FILLING_TRANSACTION_ID.value());
+        String fillingTransactionID = null == jsonElementFillingTransactionId ? "" : jsonElementFillingTransactionId.getAsString();
+
+        String createTimeAsString = orderAsJson.get(BrokerJsonKeys.CREATE_TIME.value()).getAsString();
+
+        int lastDot = createTimeAsString.lastIndexOf('.');
+        createTimeAsString = createTimeAsString.substring(0, lastDot);
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
+        DateTime createTime = formatter.parseDateTime(createTimeAsString);
 
         Order<String, String> pendingOrder = new Order<String, String>(new TradeableInstrument<String>(orderInstrument),
-                orderUnits, orderSide, orderType, orderTakeProfit, orderStopLoss, orderPrice);
+                orderUnits, orderSide, orderType, orderTakeProfit, orderStopLoss, orderId, orderPrice, state, fillingTransactionID, createTime);
         pendingOrder.setOrderId(orderId);
 
         return pendingOrder;
@@ -218,6 +235,44 @@ public class BrokerOrderManagementProvider implements OrderManagementProvider<St
             allOrders.addAll(this.pendingOrdersForAccount(account.getAccountId(), instrument));
         }
         return allOrders;
+    }
+
+    @Override
+    public Collection<Order<String, String>> getAllOrders(String accountId) {
+        Collection<Order<String, String>> pendingOrders = Lists.newArrayList();
+        CloseableHttpClient httpClient = getHttpClient();
+        try {
+
+            HttpUriRequest httpGet = new HttpGet(this.url + BrokerConstants.ACCOUNTS_RESOURCE
+                    + TradingConstants.FWD_SLASH + accountId +
+                    BrokerConstants.ORDERS_RESOURCE + "?" + BrokerJsonKeys.ORDER_STATE.value() +  "=" + BrokerConstants.ORDER_STATE_ALL);
+
+
+            httpGet.setHeader(this.authHeader);
+            httpGet.setHeader(BrokerConstants.UNIX_DATETIME_HEADER);
+            LOG.info(TradingUtils.executingRequestMsg(httpGet));
+            HttpResponse resp = httpClient.execute(httpGet);
+            String strResp = TradingUtils.responseToString(resp);
+            if (strResp != StringUtils.EMPTY) {
+                JsonObject jsonResp = new GsonBuilder().disableHtmlEscaping().create().fromJson(strResp, JsonObject.class);
+                JsonArray accountOrders = jsonResp.get(BrokerJsonKeys.ORDERS.value()).getAsJsonArray();
+                for (Object o : accountOrders) {
+                    JsonObject order = (JsonObject) o;
+                    Order<String, String> pendingOrder = parseOrder(order);
+                    if (pendingOrder != null)
+                        pendingOrders.add(pendingOrder);
+                }
+            } else {
+                TradingUtils.printErrorMsg(resp);
+            }
+        } catch (Exception e) {
+            LOG.error(String.format("error encountered whilst fetching pending orders for account %s ",
+                    accountId, e));
+        } finally {
+            TradingUtils.closeSilently(httpClient);
+        }
+        return pendingOrders;
+
     }
 
     @Override
