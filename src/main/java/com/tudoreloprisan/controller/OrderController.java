@@ -84,7 +84,8 @@ public class OrderController {
         Gson gson = new GsonBuilder().disableHtmlEscaping().create();
         JsonArray jsonArray = gson.toJsonTree(orders).getAsJsonArray();
         for (int i = 0; i < jsonArray.size(); i++) {
-            jsonArray.get(i).getAsJsonObject().addProperty("createTime", new ArrayList<Order>(orders).get(i).getCreateTime().toString());
+            String dateAsString = new ArrayList<Order>(orders).get(i).getCreateTime().toString();
+            jsonArray.get(i).getAsJsonObject().addProperty("createTime", dateAsString.substring(0, dateAsString.lastIndexOf('.')).replace('T', ' '));
             jsonArray.get(i).getAsJsonObject().addProperty("instrument", new ArrayList<Order>(orders).get(i).getInstrument().getInstrument());
 
         }

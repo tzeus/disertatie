@@ -216,8 +216,8 @@ public class BrokerOrderManagementProvider implements OrderManagementProvider<St
         String createTimeAsString = orderAsJson.get(BrokerJsonKeys.CREATE_TIME.value()).getAsString();
 
         int lastDot = createTimeAsString.lastIndexOf('.');
-        createTimeAsString = createTimeAsString.substring(0, lastDot);
-        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss");
+        createTimeAsString = createTimeAsString.substring(0, lastDot).replace('T', ' ');
+        DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd' 'HH:mm:ss");
         DateTime createTime = formatter.parseDateTime(createTimeAsString);
 
         Order<String, String> pendingOrder = new Order<String, String>(new TradeableInstrument<String>(orderInstrument),

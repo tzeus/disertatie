@@ -10,7 +10,7 @@
     "price": 0.0,
     "state": "FILLED",
     "fillingTransactionID": "50",
-    "createTime": "2018-08-29T23:41:05.000+03:00"
+    "createTime": "2018-08-29 23:41:05"
   }, {
     "instrument": "GBP_USD",
     "units": "-357",
@@ -22,7 +22,7 @@
     "price": 0.0,
     "state": "FILLED",
     "fillingTransactionID": "48",
-    "createTime": "2018-08-29T23:38:14.000+03:00"
+    "createTime": "2018-08-29 23:38:14"
   }, {
     "instrument": "EUR_CHF",
     "units": "2000",
@@ -34,7 +34,7 @@
     "price": 0.0,
     "state": "FILLED",
     "fillingTransactionID": "46",
-    "createTime": "2018-08-29T23:37:57.000+03:00"
+    "createTime": "2018-08-29 23:37:57"
   }, {
     "instrument": "EUR_USD",
     "units": "-234",
@@ -46,7 +46,7 @@
     "price": 0.0,
     "state": "FILLED",
     "fillingTransactionID": "44",
-    "createTime": "2018-08-29T22:59:23.000+03:00"
+    "createTime": "2018-08-29 22:59:23"
   }, {
     "instrument": "EUR_USD",
     "units": "100",
@@ -58,7 +58,7 @@
     "price": 0.0,
     "state": "FILLED",
     "fillingTransactionID": "42",
-    "createTime": "2018-08-29T22:41:00.000+03:00"
+    "createTime": "2018-08-29 22:41:00"
   }, {
     "instrument": "EUR_USD",
     "units": "10",
@@ -70,7 +70,7 @@
     "price": 1.16894,
     "state": "CANCELLED",
     "fillingTransactionID": "",
-    "createTime": "2018-08-29T00:46:06.000+03:00"
+    "createTime": "2018-08-29 00:46:06"
   }, {
     "instrument": "CHF_JPY",
     "units": "-10",
@@ -82,7 +82,7 @@
     "price": 0.0,
     "state": "FILLED",
     "fillingTransactionID": "23",
-    "createTime": "2018-08-29T00:23:40.000+03:00"
+    "createTime": "2018-08-29 00:23:40"
   }, {
     "instrument": "CHF_JPY",
     "units": "10",
@@ -94,7 +94,7 @@
     "price": 113.904,
     "state": "FILLED",
     "fillingTransactionID": "14",
-    "createTime": "2018-08-28T16:34:08.000+03:00"
+    "createTime": "2018-08-28 16:34:08"
   }, {
     "instrument": "EUR_CAD",
     "units": "-10",
@@ -106,7 +106,7 @@
     "price": 1.5044,
     "state": "CANCELLED",
     "fillingTransactionID": "",
-    "createTime": "2018-08-24T00:07:20.000+03:00"
+    "createTime": "2018-08-24 00:07:20"
   }, {
     "instrument": "GBP_USD",
     "units": "10",
@@ -118,7 +118,7 @@
     "price": 1.28,
     "state": "CANCELLED",
     "fillingTransactionID": "",
-    "createTime": "2018-08-23T22:25:37.000+03:00"
+    "createTime": "2018-08-23 22:25:37"
   }, {
     "instrument": "GBP_USD",
     "units": "10",
@@ -130,7 +130,7 @@
     "price": 1.4,
     "state": "CANCELLED",
     "fillingTransactionID": "",
-    "createTime": "2018-08-21T22:44:55.000+03:00"
+    "createTime": "2018-08-21 22:44:55"
   }, {
     "instrument": "GBP_USD",
     "units": "-10",
@@ -142,7 +142,7 @@
     "price": 0.0,
     "state": "FILLED",
     "fillingTransactionID": "7",
-    "createTime": "2018-08-21T13:20:12.000+03:00"
+    "createTime": "2018-08-21 13:20:12"
   }, {
     "instrument": "GBP_USD",
     "units": "10",
@@ -154,6 +154,6 @@
     "price": 0.0,
     "state": "FILLED",
     "fillingTransactionID": "5",
-    "createTime": "2018-08-21T13:20:12.000+03:00"
+    "createTime": "2018-08-21 13:20:12"
   }]
 }
