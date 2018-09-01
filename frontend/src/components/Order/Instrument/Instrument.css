@@ -1,0 +1,9 @@
+.Instrument {
+  margin: 0 auto;
+  align-content: center;
+  display: flex;
+}
+
+.Currency {
+  padding-left: 5px;
+}

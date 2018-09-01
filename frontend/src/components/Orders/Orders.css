@@ -1,13 +1,20 @@
+.Wrapper {
+  display: grid;
+  grid-template-columns: 1fr 9fr;
+  grid-column-gap: 20px;
+  overflow: hidden;
+}
 .Orders {
-  height: 740px;
-  max-width: 1050px;
-  margin: 100px auto;
+  height: 660px;
+  margin-right: -17px !important;
   overflow-y: scroll;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
-  align-items: center;
-  
+  margin: 20px 0 0 0;
+  overflow-y: scroll;
+  grid-column: 2;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, 470px);
+  grid-column-gap: 10px;
+  justify-items: center;
 }
 
 .NavigationItems {
@@ -17,22 +24,9 @@
   list-style-type: none;
   list-style: none;
   box-shadow: 0 2px 3px#ccc;
-  height: 100%;
+  grid-column: 1;
+  height: max-content;
 }
-
-.Flow {
-  display: flex;
-  margin-top: 20px;
-  top: 20px;
-}
-
-.OrderInfo {
-  width: 800px;
-  margin: 19px 0 0 50px ;
-  background-repeat: no-repeat;
-  background-image: url("../../assets/images/OrderLong.PNG");
-}
-
 
  
 h2 {
@@ -48,6 +42,7 @@ ul {
 }
  
 li {
+  padding-left: 1px;
   font: 200 20px/1.5 Helvetica, Verdana, sans-serif;
   border-bottom: 1px solid #ccc;
 }
