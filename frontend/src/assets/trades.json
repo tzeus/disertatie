@@ -1,0 +1,83 @@
+{
+  "allTrades": [{
+    "tradeId": "50",
+    "units": "5",
+    "side": "LONG",
+    "instrument": {
+      "instrument": "USD_CHF",
+      "pip": 0.0,
+      "hash": 499969689
+    },
+    "tradeDate": "2018-08-29T23:41:05.000+03:00",
+    "takeProfitPrice": 0.0,
+    "executionPrice": 0.97061,
+    "stopLoss": 0.0,
+    "accountId": "101-004-9126938-001",
+    "state": "OPEN",
+    "realizedPL": "0.0000",
+    "unrealizedPL": "-0.0109",
+    "financing": "0.0004",
+    "initialMarginRequired": "0.1422",
+    "marginUsed": "0.1435"
+  }, {
+    "tradeId": "48",
+    "units": "-357",
+    "side": "SHORT",
+    "instrument": {
+      "instrument": "GBP_USD",
+      "pip": 0.0,
+      "hash": 11864645
+    },
+    "tradeDate": "2018-08-29T23:38:14.000+03:00",
+    "takeProfitPrice": 0.0,
+    "executionPrice": 1.30311,
+    "stopLoss": 0.0,
+    "accountId": "101-004-9126938-001",
+    "state": "OPEN",
+    "realizedPL": "0.0000",
+    "unrealizedPL": "2.0396",
+    "financing": "0.0154",
+    "initialMarginRequired": "13.2308",
+    "marginUsed": "13.2761"
+  }, {
+    "tradeId": "46",
+    "units": "2000",
+    "side": "LONG",
+    "instrument": {
+      "instrument": "EUR_CHF",
+      "pip": 0.0,
+      "hash": 560623581
+    },
+    "tradeDate": "2018-08-29T23:37:57.000+03:00",
+    "takeProfitPrice": 0.0,
+    "executionPrice": 1.13645,
+    "stopLoss": 0.0,
+    "accountId": "101-004-9126938-001",
+    "state": "OPEN",
+    "realizedPL": "0.0000",
+    "unrealizedPL": "-22.7469",
+    "financing": "-0.0514",
+    "initialMarginRequired": "66.6000",
+    "marginUsed": "66.6000"
+  }, {
+    "tradeId": "44",
+    "units": "-134",
+    "side": "SHORT",
+    "instrument": {
+      "instrument": "EUR_USD",
+      "pip": 0.0,
+      "hash": 561170328
+    },
+    "tradeDate": "2018-08-29T22:59:23.000+03:00",
+    "takeProfitPrice": 0.0,
+    "executionPrice": 1.1706,
+    "stopLoss": 0.0,
+    "accountId": "101-004-9126938-001",
+    "state": "OPEN",
+    "realizedPL": "0.0000",
+    "unrealizedPL": "1.1674",
+    "financing": "0.0095",
+    "initialMarginRequired": "4.4622",
+    "marginUsed": "4.4622"
+  }]
+}

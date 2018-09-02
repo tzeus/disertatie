@@ -41,6 +41,7 @@
 
 .Tpsl {
   align-self: end;
+  justify-self: end;
   grid-row: 3;
   grid-column:3;
 }

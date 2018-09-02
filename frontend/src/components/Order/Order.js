@@ -49,13 +49,13 @@ class Order extends Component {
   render() {
 
     return (
-      <div className={classes.Order} style={{ backgroundColor: this.colorOrderByStatus() }} >
+      <div id={this.props.orderId} className={classes.Order} style={{ backgroundColor: this.colorOrderByStatus() }} >
         <div className={classes.OrderId}>
           <OrderId orderId={this.props.orderId} />
           <Type type={this.props.type} />
         </div>
         <div className={classes.Instrument}>
-          <Instrument instrument={this.props.instrument} />
+          <Instrument instrument={this.props.instrument}  width={'50%'} height={'50%'}/>
         </div>
         <div className={classes.Amount}>
           <Amount amount={this.props.units} />
@@ -73,7 +73,7 @@ class Order extends Component {
           <CreateTime createTime={this.props.createTime} />
         </div>
         <div className={classes.Side}>
-          <Side side={this.props.side} />
+          <Side side={this.props.side}  width={'100%'} height={'100%'}/>
         </div>
 
 

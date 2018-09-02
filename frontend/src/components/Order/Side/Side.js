@@ -5,13 +5,16 @@ import classes from './Side.css';
 
 const side = (props) => {
 
-const direction = (side) =>{
-  return side==='LONG' ? bull : bear;
-}
+  const direction = (side) => {
+    if (typeof side === 'undefined') {
+      return;
+    }
+    return side === 'LONG' ? bull : bear;
+  }
 
-  return(
+  return (
     <div className={classes.Side}>
-    <img src={direction(props.side)} alt={props.side}></img>
+      <img width={props.width} height={props.height} src={direction(props.side)} alt={props.side}></img>
     </div>
   );
 

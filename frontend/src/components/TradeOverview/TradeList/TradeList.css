@@ -1,22 +1,3 @@
-.Wrapper {
-  display: grid;
-  grid-template-columns: 1fr 9fr;
-  grid-column-gap: 20px;
-  overflow: hidden;
-}
-.Orders {
-  height: 660px;
-  margin-right: -17px !important;
-  overflow-y: scroll;
-  margin: 20px 0 0 0;
-  overflow-y: scroll;
-  grid-column: 2;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, 470px);
-  grid-column-gap: 10px;
-  justify-items: center;
-}
-
 .NavigationItems {
   max-width: 150px;
   margin: 20px 0 0 50px ;

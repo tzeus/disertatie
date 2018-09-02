@@ -16,6 +16,7 @@ class Orders extends Component {
     let orders = allOrders.allOrders.map((order) => {
       return (
         <Order
+          id={order.orderId}
           key={order.orderId}
           orderId={order.orderId}
           instrument={order.instrument}
@@ -56,7 +57,7 @@ class Orders extends Component {
       return (
 
         <li key={order.orderId} style={{ backgroundColor: order.state === 'FILLED' ? '#5C9210' : '#944317' }}>
-          <a href="#">Order ID: {order.orderId}</a>
+          <a href={'#'+order.orderId}>Order ID: {order.orderId}</a>
         </li>
       )
     });

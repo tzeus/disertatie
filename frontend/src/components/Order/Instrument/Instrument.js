@@ -29,21 +29,27 @@ const instrument = (props) => {
   };
 
   const firstCurrency = (instrument) => {
+    if (typeof instrument === 'undefined') {
+      return '';
+    }
     return instrument.substring(0, 3);
   };
   const secondCurrency = (instrument) => {
+    if (typeof instrument === 'undefined') {
+      return '';
+    }
     return instrument.substring(4, 7);
   };
 
 
+
+
   return (
     <div className={classes.Instrument}>
-      <img src={getCurrencyImage(firstCurrency(props.instrument))}
-        alt={firstCurrency(props.instrument)}
-        className={classes.Currency}></img>
-      <img src={getCurrencyImage(secondCurrency(props.instrument))}
-        alt={secondCurrency(props.instrument)}
-        className={classes.Currency}></img>
+      <img width={props.width} height={props.height} src={getCurrencyImage(firstCurrency(props.instrument))}
+        alt={firstCurrency(props.instrument)}></img>
+      <img width={props.width} height={props.height} src={getCurrencyImage(secondCurrency(props.instrument))}
+        alt={secondCurrency(props.instrument)} ></img>
     </div>
   );
 };

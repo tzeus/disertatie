@@ -4,6 +4,7 @@ import './App.css';
 import {Route, Switch} from 'react-router-dom';
 import Layout from './components/Layout/Layout';
 import Orders from './components/Orders/Orders';
+import TradeOverview from './components/TradeOverview/TradeOverview';
 
 
 class App extends Component {
@@ -13,6 +14,7 @@ class App extends Component {
         <Layout>
           <Switch>
           <Route path="/orders" component={Orders} />
+          <Route path="/trades" component={TradeOverview} />
           <Route path="/" component={Account} />
           </Switch>
         </Layout>
