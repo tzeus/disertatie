@@ -1,7 +1,23 @@
 .Wrapper{
-  
+  display: grid;
+  grid-template-columns: 150px, 1fr;
+  grid-template-rows: 150px, 1fr;
+  grid-column-gap: 5px;
+  grid-row-gap: 5px;
 }
 
-.TradeOverview {
+.Trade {
+grid-column: 2;
+grid-row: 2;
+}
 
+.TradeDetails{
+margin-top: 20px;  
+grid-column: 2;
+grid-row: 1;
+}
+
+.TradeList{
+grid-column: 1;
+grid-row: 1/span 2;
 }

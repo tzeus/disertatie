@@ -1,11 +1,13 @@
-import React, {Component} from 'react';
-import classes from './Trade.css';
-import Chart from './CandleSticks/Chart';
-import { getData } from "./CandleSticks/utils";
+
+import React from 'react';
+import { render } from 'react-dom';
+import Chart from './Chart';
+import { getData } from "./utils"
 
 import { TypeChooser } from "react-stockcharts/lib/helper";
 
-class Trade extends Component {
+
+class ChartComponent extends React.Component {
 	componentDidMount() {
 		getData().then(data => {
 			this.setState({ data })
@@ -21,7 +23,9 @@ class Trade extends Component {
 			</TypeChooser>
 		)
 	}
-
 }
 
-export default Trade;
+render(
+	<ChartComponent />,
+	document.getElementById("root")
+);

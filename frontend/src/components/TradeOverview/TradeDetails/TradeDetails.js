@@ -12,6 +12,7 @@ import Instrument from './../../Order/Instrument/Instrument';
 import Side from './../../Order/Side/Side';
 import Tpsl from './../../Order/TPSL/TPSL';
 import Amount from './../../Order/Amount/Amount';
+import CreateTime from './../../Order/CreateTime/CreateTime';
 
 class TradeDetails extends Component {
 
@@ -27,7 +28,7 @@ class TradeDetails extends Component {
       financing: '0.0154',
       tradeId: '48',
       tradeState: 'OPEN',
-      tradeDate: '2018-08-29T23:38:14.00',
+      tradeDate: '2018-08-29 23:38:14.00',
       amount: '-357',
       takeProfit: '0.0',
       stopLoss: '0.0'
@@ -35,12 +36,12 @@ class TradeDetails extends Component {
   }
 
   colorOrderByStatus = () => {
-    const tradeProfit = this.state.trade.unrealizedPL;
-    if (tradeProfit < 0) {
+    const tradeProfit = parseFloat(this.state.trade.unrealizedPL);
+    if (tradeProfit > 0) {
       return '#5C9210';
     } else if (tradeProfit === 0) {
       return 'gray';
-    } else if (tradeProfit > 0) {
+    } else if (tradeProfit < 0) {
       return '#944317';
     }
   }
@@ -106,6 +107,9 @@ class TradeDetails extends Component {
           </div>
           <div className={classes.Amount}>
             <Amount amount={this.state.trade.amount} />
+          </div>
+          <div className={classes.CreateTime}>
+          <CreateTime createTime={this.state.trade.tradeDate}/>
           </div>
 
         </div>
