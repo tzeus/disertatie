@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import Account from "./components/Account/Account";
+import Home from './components/Home/Home';
 import './App.css';
 import {Route, Switch} from 'react-router-dom';
 import Layout from './components/Layout/Layout';
@@ -15,7 +15,7 @@ class App extends Component {
           <Switch>
           <Route path="/orders" component={Orders} />
           <Route path="/trades" component={TradeOverview} />
-          <Route path="/" component={Account} />
+          <Route path="/" component={Home} />
           </Switch>
         </Layout>
       </div>

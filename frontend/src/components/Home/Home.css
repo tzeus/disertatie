@@ -1,0 +1,18 @@
+.Wrapper {
+    height: 800px;
+    padding: 40px;
+    display: flex;
+    justify-content: space-around;
+    flex-flow: row wrap;
+    
+  }
+
+  .Account {
+      align-self: flex-end;
+  }
+  
+  @media (min-width: 600px){
+    .Auth {
+        width: 500px;
+    }
+  }

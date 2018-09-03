@@ -1,38 +1,40 @@
 import React, { Component } from 'react';
 import classes from './account.css';
 import Card from './../Cards/Card1';
+import { connect } from 'react-redux';
+import * as actions from '../../store/actions/action';
 
 class Account extends Component {
-  state = {
-    "totalBalance": 0,
-    "unrealisedPnl": 0.0,
-    "realisedPnl": 0.0,
-    "marginUsed": 0.0,
-    "marginAvailable": 0,
-    "netAssetValue": 0,
-    "amountAvailableRatio": 0,
-    "marginRate": 0.0,
-    "openTrades": 0,
-    "currency": "EUR",
-    "accountId": "101-004-9126938-001",
-    "hash": 0
-  }
+
   render() {
     return (
-      <div className={classes.Wrapper}>
-        <Card />
-        <div className={classes.Account}>
-          <label style={{ float: "left" }}>Account ID: <strong>{this.state.accountId}</strong>  </label><br />
-          <label style={{ float: "left" }}>Total balance: <strong>{this.state.totalBalance}</strong>  </label><br />
-          <label style={{ float: "left" }}>Currency: <strong>{this.state.currency}</strong>  </label><br />
-          <label style={{ float: "left" }}>Open trades: <strong>{this.state.openTrades} </strong>  </label><br />
-          <label style={{ float: "left" }}>Margin rate: <strong>{this.state.marginRate}  </strong> </label><br />
-          <label style={{ float: "left" }}>Margin available: <strong>{this.state.marginAvailable}  </strong> </label><br />
-          <label style={{ float: "left" }}>Margin used: <strong>{this.state.marginUsed}  </strong> </label><br />
-          <label style={{ float: "left" }}>Amount available ratio: <strong>{this.state.amountAvailableRatio}  </strong> </label><br />
-          <label style={{ float: "left" }}>Net asset value: <strong>{this.state.netAssetValue}  </strong> </label><br />
-          <label style={{ float: "left" }}>Realized PnL: <strong>{this.state.realisedPnl}  </strong> </label><br />
-          <label style={{ float: "left" }}>Unrealized PnL: <strong>{this.state.unrealisedPnl}  </strong> </label><br />
+      <div className={classes.Account}>
+        <div className={classes.left}>
+          Account ID:<br />
+          Total balance:<br />
+          Currency:<br />
+          Open Trades:<br />
+          Margin rate:<br />
+          Margin available:<br />
+          Margin used:<br />
+          Amount available ratio:<br />
+          Net asset value:<br />
+          Realized PnL:<br />
+          Unrealized PnL:<br />
+        </div>
+        <div className={classes.right}>
+
+          <strong>{this.props.account.accountId}</strong><br />
+          <strong>{this.props.account.totalBalance}</strong><br />
+          <strong>{this.props.account.currency}</strong><br />
+          <strong>{this.props.account.openTrades} </strong><br />
+          <strong>{this.props.account.marginRate}  </strong><br />
+          <strong>{this.props.account.marginAvailable}  </strong><br />
+          <strong>{this.props.account.marginUsed}  </strong><br />
+          <strong>{this.props.account.amountAvailableRatio}  </strong><br />
+          <strong>{this.props.account.netAssetValue}  </strong><br />
+          <strong>{this.props.account.realisedPnl}  </strong><br />
+          <strong>{this.props.account.unrealisedPnl}  </strong><br />
 
         </div>
       </div>
@@ -40,4 +42,14 @@ class Account extends Component {
   }
 }
 
-export default Account;
+const mapStateToProps = (state) => {
+  return {
+    account: state.account,
+    stats: state.stats,
+    transactions: state.transactions
+  }
+}
+
+
+
+export default connect(mapStateToProps)(Account);

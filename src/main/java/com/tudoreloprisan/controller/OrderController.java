@@ -1,8 +1,8 @@
 /**
- * Copyright Murex S.A.S., 2003-2018. All Rights Reserved.
- * <p>
- * This software program is proprietary and confidential to Murex S.A.S and its affiliates ("Murex") and, without limiting the generality of the foregoing reservation of rights, shall not be accessed, used, reproduced or distributed without the
- * express prior written consent of Murex and subject to the applicable Murex licensing terms. Any modification or removal of this copyright notice is expressly prohibited.
+ *  Copyright Murex S.A.S., 2003-2018. All Rights Reserved.
+ * 
+ *  This software program is proprietary and confidential to Murex S.A.S and its affiliates ("Murex") and, without limiting the generality of the foregoing reservation of rights, shall not be accessed, used, reproduced or distributed without the
+ *  express prior written consent of Murex and subject to the applicable Murex licensing terms. Any modification or removal of this copyright notice is expressly prohibited.
  */
 package com.tudoreloprisan.controller;
 
@@ -10,10 +10,15 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -49,6 +54,7 @@ import com.tudoreloprisan.tradingAPI.trade.*;
 import org.apache.log4j.Logger;
 
 import org.joda.time.format.DateTimeFormat;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -88,17 +94,15 @@ public class OrderController {
     //~ ----------------------------------------------------------------------------------------------------------------
 
     @RequestMapping(value = "/getHistData", method = RequestMethod.GET)
-    public String getHistoricData(@RequestParam(value = "instrument") String instrument, @RequestParam(value = "granularity") String granularity, @RequestParam(value = "amount") String amount) {
-        HistoricMarketDataProvider<String> historicMarketDataProvider = new BrokerHistoricMarketDataProvider(url,
-                accessToken);
+    public String getHistoricData(@RequestParam(value = "instrument") String instrument,
+        @RequestParam(value = "granularity") String granularity,
+        @RequestParam(value = "amount") String amount) {
+        HistoricMarketDataProvider<String> historicMarketDataProvider = new BrokerHistoricMarketDataProvider(url, accessToken);
         TradeableInstrument<String> usdchf = new TradeableInstrument<String>(instrument);
-        List<CandleStick<String>> candlesForInstrument = historicMarketDataProvider.getCandleSticks(usdchf,
-                CandleStickGranularity.valueOf(granularity), Integer.parseInt(amount));
+        List<CandleStick<String>> candlesForInstrument = historicMarketDataProvider.getCandleSticks(usdchf, CandleStickGranularity.valueOf(granularity), Integer.parseInt(amount));
         for (CandleStick<String> candle : candlesForInstrument) {
             LOG.info(candle);
         }
-
-
 
         //TODO -> Output for Front-End
         Gson gson = new GsonBuilder().disableHtmlEscaping().create();
@@ -157,7 +161,6 @@ public class OrderController {
         return gson.toJson(orders);
     }
 
-
     @RequestMapping(value = "/closeTrade", method = RequestMethod.PUT)
     public String closeTrade(@RequestParam(value = "tradeId") String tradeId) {
         BrokerTradeManagementProvider brokerTradeManagementProvider = new BrokerTradeManagementProvider(url, accessToken);
@@ -215,7 +218,6 @@ public class OrderController {
 
     }
 
-
     @RequestMapping(value = "/transactions", method = RequestMethod.GET)
     public String getTransactions(@RequestParam(value = "sinceId", defaultValue = "1") String sinceId) {
         AccountDataProvider<String> accountDataProvider = new BrokerAccountDataProviderService(url, user, accessToken);
@@ -245,8 +247,8 @@ public class OrderController {
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/placeMarketOrder", method = RequestMethod.POST)
     public String placeMarketOrder(@RequestParam(value = "units") String units,
-                                   @RequestParam(value = "timeInForce") String timeInForce,
-                                   @RequestParam(value = "instrument") String instrument) throws InterruptedException {
+        @RequestParam(value = "timeInForce") String timeInForce,
+        @RequestParam(value = "instrument") String instrument) throws InterruptedException {
 
         AccountDataProvider<String> accountDataProvider = new BrokerAccountDataProviderService(url, user, accessToken);
         BaseTradingConfig tradingConfig = new BaseTradingConfig();
@@ -264,23 +266,26 @@ public class OrderController {
 
     }
 
-
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/placeLimitOrder", method = RequestMethod.POST)
     public String placeMarketOrder(@RequestParam(value = "units") String units,
-                                   @RequestParam(value = "timeInForce") String timeInForce,
-                                   @RequestParam(value = "stopLoss") String stopLoss,
-                                   @RequestParam(value = "price") String price,
-                                   @RequestParam(value = "takeProfit") String takeProfit,
-                                   @RequestParam(value = "instrument") String instrument) throws InterruptedException {
+        @RequestParam(value = "timeInForce") String timeInForce,
+        @RequestParam(value = "stopLoss") String stopLoss,
+        @RequestParam(value = "price") String price,
+        @RequestParam(value = "takeProfit") String takeProfit,
+        @RequestParam(value = "instrument") String instrument) throws InterruptedException {
 
         AccountDataProvider<String> accountDataProvider = new BrokerAccountDataProviderService(url, user, accessToken);
         OrderManagementProvider<String, String, String> orderManagementProvider = new BrokerOrderManagementProvider(url, accessToken, accountDataProvider);
 
         int unit = Integer.parseInt(units);
 
-        Order order = new Order(new TradeableInstrument<String>(instrument), units.replace("-", ""),
-                (unit < 0) ? TradingSignal.SHORT : TradingSignal.LONG, OrderType.LIMIT, Double.parseDouble(takeProfit), Double.parseDouble(stopLoss), Double.parseDouble(price));
+        double tp = Double.parseDouble(takeProfit);
+        double sl = Double.parseDouble(stopLoss);
+        double pr = Double.parseDouble(price);
+        Order order = new Order(new TradeableInstrument<String>(instrument), units.replace("-", ""), (unit < 0) ? TradingSignal.SHORT : TradingSignal.LONG, OrderType.LIMIT,
+            BigDecimal.valueOf(tp).setScale(4, RoundingMode.HALF_UP).doubleValue(), BigDecimal.valueOf(sl).setScale(4, RoundingMode.HALF_UP).doubleValue(),
+            BigDecimal.valueOf(pr).setScale(4, RoundingMode.HALF_UP).doubleValue());
         String orderId = orderManagementProvider.placeOrder(order, accountId);
 
         return orderId;
@@ -289,14 +294,14 @@ public class OrderController {
 
     @RequestMapping(value = "/placeOrder", method = RequestMethod.POST)
     public String placeOrder(@RequestParam(value = "units") String units,
-                             @RequestParam(value = "instrument") String instrument,
-                             @RequestParam(value = "timeInForce") String timeInForce,
-                             @RequestParam(value = "positionFill") String positionFill,
-                             @RequestParam(value = "entryPoint") String entryPoint,
-                             @RequestParam(value = "direction") String direction,
-                             @RequestParam(value = "stopLossOnFill") String stopLossOnFill,
-                             @RequestParam(value = "orderType") String orderType,
-                             @RequestParam(value = "takeProfitOnFill") String takeProfitOnFill) throws InterruptedException {
+        @RequestParam(value = "instrument") String instrument,
+        @RequestParam(value = "timeInForce") String timeInForce,
+        @RequestParam(value = "positionFill") String positionFill,
+        @RequestParam(value = "entryPoint") String entryPoint,
+        @RequestParam(value = "direction") String direction,
+        @RequestParam(value = "stopLossOnFill") String stopLossOnFill,
+        @RequestParam(value = "orderType") String orderType,
+        @RequestParam(value = "takeProfitOnFill") String takeProfitOnFill) throws InterruptedException {
 
         BlockingQueue<TradingDecision<String>> orderQueue = new LinkedBlockingQueue<TradingDecision<String>>();
 
@@ -324,43 +329,43 @@ public class OrderController {
         PreOrderValidationService<String, String, String> preOrderValidationService = new PreOrderValidationService<String, String, String>(tradeInfoService, movingAverageCalculationService, tradingConfig, orderInfoService);
 
         OrderExecutionService<String, String, String> orderExecService = new OrderExecutionService<String, String, String>(orderQueue, accountInfoService, orderManagementProvider, tradingConfig, preOrderValidationService,
-                currentPriceInfoProvider);
+            currentPriceInfoProvider);
         orderExecService.init();
         TradingDecision<String> decision = null;
         switch (OrderEvents.valueOf(orderType)) {
 
-            case MARKET_ORDER:
-                decision = new TradingDecision<String>(new TradeableInstrument<String>(instrument), TradingSignal.valueOf(direction), Double.parseDouble(takeProfitOnFill), Double.parseDouble(stopLossOnFill),
-                        Double.parseDouble(entryPoint));
-                break;
+        case MARKET_ORDER:
+            decision = new TradingDecision<String>(new TradeableInstrument<String>(instrument), TradingSignal.valueOf(direction), Double.parseDouble(takeProfitOnFill), Double.parseDouble(stopLossOnFill),
+                Double.parseDouble(entryPoint));
+            break;
 
-            case LIMIT_ORDER:
-                decision = new TradingDecision<String>(new TradeableInstrument<String>(instrument), TradingSignal.valueOf(direction), Double.parseDouble(takeProfitOnFill), Double.parseDouble(stopLossOnFill),
-                        Double.parseDouble(entryPoint));
-                break;
+        case LIMIT_ORDER:
+            decision = new TradingDecision<String>(new TradeableInstrument<String>(instrument), TradingSignal.valueOf(direction), Double.parseDouble(takeProfitOnFill), Double.parseDouble(stopLossOnFill),
+                Double.parseDouble(entryPoint));
+            break;
 
-            case TAKE_PROFIT_ORDER:
-                decision = new TradingDecision<String>(new TradeableInstrument<String>(instrument), TradingSignal.valueOf(direction), Double.parseDouble(takeProfitOnFill), Double.parseDouble(stopLossOnFill),
-                        Double.parseDouble(entryPoint));
-                break;
+        case TAKE_PROFIT_ORDER:
+            decision = new TradingDecision<String>(new TradeableInstrument<String>(instrument), TradingSignal.valueOf(direction), Double.parseDouble(takeProfitOnFill), Double.parseDouble(stopLossOnFill),
+                Double.parseDouble(entryPoint));
+            break;
 
-            case STOP_LOSS_ORDER:
-                decision = new TradingDecision<String>(new TradeableInstrument<String>(instrument), TradingSignal.valueOf(direction), Double.parseDouble(takeProfitOnFill), Double.parseDouble(stopLossOnFill),
-                        Double.parseDouble(entryPoint));
-                break;
+        case STOP_LOSS_ORDER:
+            decision = new TradingDecision<String>(new TradeableInstrument<String>(instrument), TradingSignal.valueOf(direction), Double.parseDouble(takeProfitOnFill), Double.parseDouble(stopLossOnFill),
+                Double.parseDouble(entryPoint));
+            break;
 
-            case MARKET_IF_TOUCHED_ORDER:
-                decision = new TradingDecision<String>(new TradeableInstrument<String>(instrument), TradingSignal.valueOf(direction), Double.parseDouble(takeProfitOnFill), Double.parseDouble(stopLossOnFill),
-                        Double.parseDouble(entryPoint));
-                break;
+        case MARKET_IF_TOUCHED_ORDER:
+            decision = new TradingDecision<String>(new TradeableInstrument<String>(instrument), TradingSignal.valueOf(direction), Double.parseDouble(takeProfitOnFill), Double.parseDouble(stopLossOnFill),
+                Double.parseDouble(entryPoint));
+            break;
 
-            case ORDER_FILL:
-                decision = new TradingDecision<String>(new TradeableInstrument<String>(instrument), TradingSignal.valueOf(direction), Double.parseDouble(takeProfitOnFill), Double.parseDouble(stopLossOnFill),
-                        Double.parseDouble(entryPoint));
-                break;
+        case ORDER_FILL:
+            decision = new TradingDecision<String>(new TradeableInstrument<String>(instrument), TradingSignal.valueOf(direction), Double.parseDouble(takeProfitOnFill), Double.parseDouble(stopLossOnFill),
+                Double.parseDouble(entryPoint));
+            break;
 
-            default:
-                break;
+        default:
+            break;
         }
         orderQueue.offer(decision);
         Thread.sleep(10000); // enough time to place an order
@@ -382,11 +387,11 @@ public class OrderController {
             //    fos = new FileWriter(file);
 //            PrintWriter dos = new PrintWriter(fos);
 // loop through all your data and print it to the file
-               final ArrayList<Boolean>  isFirstLine = new ArrayList<>();
-               isFirstLine.add(true);
+            final ArrayList<Boolean> isFirstLine = new ArrayList<>();
+            isFirstLine.add(true);
 
-                dos.println("date\topen\thigh\tlow\tclose\tvolume\t");
-                tsvData.append("date\topen\thigh\tlow\tclose\tvolume\t").append(System.lineSeparator());
+            dos.println("date\topen\thigh\tlow\tclose\tvolume\t");
+            tsvData.append("date\topen\thigh\tlow\tclose\tvolume\t").append(System.lineSeparator());
             candlestickData.forEach(jsonElement -> {
                 JsonObject candleStickJsonObject = jsonElement.getAsJsonObject();
                 String openPrice = candleStickJsonObject.get("openPrice").getAsString();
@@ -404,7 +409,8 @@ public class OrderController {
                 dos.print(lowPrice + "\t");
                 dos.print(closePrice + "\t");
                 dos.print(volume + "\t");
-                tsvData.append(time).append('\t').append(openPrice).append('\t').append(highPrice).append('\t').append(lowPrice).append('\t').append(closePrice).append('\t').append(volume).append('\t').append(System.lineSeparator());
+                tsvData.append(time).append('\t').append(openPrice).append('\t').append(highPrice).append('\t').append(lowPrice).append('\t').append(closePrice).append('\t').append(volume).append('\t')
+                .append(System.lineSeparator());
                 dos.println();
                 isFirstLine.add(0, false);
             });

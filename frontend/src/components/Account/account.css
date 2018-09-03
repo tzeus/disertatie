@@ -1,18 +1,23 @@
 .Account {
-  margin: 20px auto;
-  width: 300px;
-  text-align: center;
-  float: left;
-  display: block;
-  box-shadow: 0 2px 3px #ccc;
-  border: 1px solid #eee;
-  padding: 10px;
-  box-sizing: border-box;
-
+  background: rgb(255, 244, 244);
+  width: 420px;
+  height: 300px;
+  display: flex;
+  -webkit-box-shadow: 6px 6px 17px -5px rgba(0, 0, 0, 0.75);
+  -moz-box-shadow: 6px 6px 17px -5px rgba(0, 0, 0, 0.75);
+  box-shadow: 6px 6px 17px -5px rgba(0, 0, 0, 0.75);
 }
 
-.Wrapper {
-  padding: 40px;
+.left{
+  width: 50%;
+  padding: 10px 20px;
+  display: block;
+}
+
+.right{
+  width:50%;
+  margin-right: 20px;
+  padding: 10px;
 }
 
 @media (min-width: 600px){
