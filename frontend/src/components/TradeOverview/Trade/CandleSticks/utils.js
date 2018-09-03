@@ -1,7 +1,5 @@
-
-
-import { tsvParse, csvParse } from  "d3-dsv";
-import { timeParse } from "d3-time-format";
+import { tsvParse } from  "d3-dsv";
+// import { timeParse } from "d3-time-format";
 
 function parseData(parse) {
 	return function(d) {
@@ -16,7 +14,7 @@ function parseData(parse) {
 	};
 }
 
-
+ 
 export function getData() {
 	const promiseIntraDayDiscontinuous = fetch("//rrag.github.io/react-stockcharts/data/MSFT_INTRA_DAY.tsv")
 		.then(response => response.text())

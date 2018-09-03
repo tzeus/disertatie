@@ -1,6 +1,74 @@
 {
   "allOrders": [{
-    "instrument": "USD_CHF",
+    "instrument": {
+      "instrument": "GBP_USD",
+      "pip": 0.0,
+      "hash": 11864645
+    },
+    "units": "357",
+    "side": "LONG",
+    "type": "MARKET",
+    "takeProfit": 0.0,
+    "stopLoss": 0.0,
+    "orderId": "61",
+    "price": 0.0,
+    "state": "CANCELLED",
+    "fillingTransactionID": "",
+    "createTime": "2018-09-02 20:28:29"
+  }, {
+    "instrument": {
+      "instrument": "GBP_USD",
+      "pip": 0.0,
+      "hash": 11864645
+    },
+    "units": "357",
+    "side": "LONG",
+    "type": "MARKET",
+    "takeProfit": 0.0,
+    "stopLoss": 0.0,
+    "orderId": "59",
+    "price": 0.0,
+    "state": "CANCELLED",
+    "fillingTransactionID": "",
+    "createTime": "2018-09-02 20:26:30"
+  }, {
+    "instrument": {
+      "instrument": "GBP_USD",
+      "pip": 0.0,
+      "hash": 11864645
+    },
+    "units": "357",
+    "side": "LONG",
+    "type": "MARKET",
+    "takeProfit": 0.0,
+    "stopLoss": 0.0,
+    "orderId": "57",
+    "price": 0.0,
+    "state": "CANCELLED",
+    "fillingTransactionID": "",
+    "createTime": "2018-09-02 20:25:37"
+  }, {
+    "instrument": {
+      "instrument": "GBP_USD",
+      "pip": 0.0,
+      "hash": 11864645
+    },
+    "units": "357",
+    "side": "LONG",
+    "type": "MARKET",
+    "takeProfit": 0.0,
+    "stopLoss": 0.0,
+    "orderId": "55",
+    "price": 0.0,
+    "state": "CANCELLED",
+    "fillingTransactionID": "",
+    "createTime": "2018-09-02 20:25:24"
+  }, {
+    "instrument": {
+      "instrument": "USD_CHF",
+      "pip": 0.0,
+      "hash": 499969689
+    },
     "units": "5",
     "side": "LONG",
     "type": "MARKET",
@@ -12,7 +80,11 @@
     "fillingTransactionID": "50",
     "createTime": "2018-08-29 23:41:05"
   }, {
-    "instrument": "GBP_USD",
+    "instrument": {
+      "instrument": "GBP_USD",
+      "pip": 0.0,
+      "hash": 11864645
+    },
     "units": "-357",
     "side": "SHORT",
     "type": "MARKET",
@@ -24,7 +96,11 @@
     "fillingTransactionID": "48",
     "createTime": "2018-08-29 23:38:14"
   }, {
-    "instrument": "EUR_CHF",
+    "instrument": {
+      "instrument": "EUR_CHF",
+      "pip": 0.0,
+      "hash": 560623581
+    },
     "units": "2000",
     "side": "LONG",
     "type": "MARKET",
@@ -36,7 +112,11 @@
     "fillingTransactionID": "46",
     "createTime": "2018-08-29 23:37:57"
   }, {
-    "instrument": "EUR_USD",
+    "instrument": {
+      "instrument": "EUR_USD",
+      "pip": 0.0,
+      "hash": 561170328
+    },
     "units": "-234",
     "side": "SHORT",
     "type": "MARKET",
@@ -48,7 +128,11 @@
     "fillingTransactionID": "44",
     "createTime": "2018-08-29 22:59:23"
   }, {
-    "instrument": "EUR_USD",
+    "instrument": {
+      "instrument": "EUR_USD",
+      "pip": 0.0,
+      "hash": 561170328
+    },
     "units": "100",
     "side": "LONG",
     "type": "MARKET",
@@ -60,7 +144,11 @@
     "fillingTransactionID": "42",
     "createTime": "2018-08-29 22:41:00"
   }, {
-    "instrument": "EUR_USD",
+    "instrument": {
+      "instrument": "EUR_USD",
+      "pip": 0.0,
+      "hash": 561170328
+    },
     "units": "10",
     "side": "LONG",
     "type": "LIMIT",
@@ -72,7 +160,11 @@
     "fillingTransactionID": "",
     "createTime": "2018-08-29 00:46:06"
   }, {
-    "instrument": "CHF_JPY",
+    "instrument": {
+      "instrument": "CHF_JPY",
+      "pip": 0.0,
+      "hash": -1920976052
+    },
     "units": "-10",
     "side": "SHORT",
     "type": "MARKET",
@@ -84,7 +176,11 @@
     "fillingTransactionID": "23",
     "createTime": "2018-08-29 00:23:40"
   }, {
-    "instrument": "CHF_JPY",
+    "instrument": {
+      "instrument": "CHF_JPY",
+      "pip": 0.0,
+      "hash": -1920976052
+    },
     "units": "10",
     "side": "LONG",
     "type": "LIMIT",
@@ -96,7 +192,11 @@
     "fillingTransactionID": "14",
     "createTime": "2018-08-28 16:34:08"
   }, {
-    "instrument": "EUR_CAD",
+    "instrument": {
+      "instrument": "EUR_CAD",
+      "pip": 0.0,
+      "hash": 560616792
+    },
     "units": "-10",
     "side": "SHORT",
     "type": "LIMIT",
@@ -108,7 +208,11 @@
     "fillingTransactionID": "",
     "createTime": "2018-08-24 00:07:20"
   }, {
-    "instrument": "GBP_USD",
+    "instrument": {
+      "instrument": "GBP_USD",
+      "pip": 0.0,
+      "hash": 11864645
+    },
     "units": "10",
     "side": "LONG",
     "type": "LIMIT",
@@ -120,7 +224,11 @@
     "fillingTransactionID": "",
     "createTime": "2018-08-23 22:25:37"
   }, {
-    "instrument": "GBP_USD",
+    "instrument": {
+      "instrument": "GBP_USD",
+      "pip": 0.0,
+      "hash": 11864645
+    },
     "units": "10",
     "side": "LONG",
     "type": "LIMIT",
@@ -132,7 +240,11 @@
     "fillingTransactionID": "",
     "createTime": "2018-08-21 22:44:55"
   }, {
-    "instrument": "GBP_USD",
+    "instrument": {
+      "instrument": "GBP_USD",
+      "pip": 0.0,
+      "hash": 11864645
+    },
     "units": "-10",
     "side": "SHORT",
     "type": "MARKET",
@@ -144,7 +256,11 @@
     "fillingTransactionID": "7",
     "createTime": "2018-08-21 13:20:12"
   }, {
-    "instrument": "GBP_USD",
+    "instrument": {
+      "instrument": "GBP_USD",
+      "pip": 0.0,
+      "hash": 11864645
+    },
     "units": "10",
     "side": "LONG",
     "type": "MARKET",

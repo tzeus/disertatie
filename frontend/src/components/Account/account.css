@@ -11,6 +11,10 @@
 
 }
 
+.Wrapper {
+  padding: 40px;
+}
+
 @media (min-width: 600px){
   .Auth {
       width: 500px;

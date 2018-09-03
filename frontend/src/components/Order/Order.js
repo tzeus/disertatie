@@ -8,11 +8,12 @@ import OrderId from './OrderID/OrderID';
 import CreateTime from './CreateTime/CreateTime';
 import OrderState from './OrderState/OrderState';
 import Tpsl from './TPSL/TPSL';
+import { connect } from 'react-redux';
+import * as actions from '../../store/actions/action';
+
 
 class Order extends Component {
-  state = {
-    order: null
-  }
+
 
   colorOrderByStatus = () => {
     switch (this.props.orderState) {
@@ -29,21 +30,7 @@ class Order extends Component {
   }
 
   componentWillMount() {
-    this.setState({
-      order: {
-        orderId: this.props.orderId,
-        instrument: this.props.instrument,
-        units: this.props.units,
-        side: this.props.side,
-        type: this.props.type,
-        takeProfit: this.props.takeProfit,
-        stopLoss: this.props.stopLoss,
-        price: this.props.price,
-        orderState: this.props.state,
-        fillingTransactionID: this.props.fillingTransactionID,
-        createTime: this.props.createTime
-      }
-    });
+   
   }
 
   render() {
@@ -84,5 +71,16 @@ class Order extends Component {
 
 }
 
+const mapStateToProps = (state) => {
+  return {
+    order: state.order
+  }
+}
 
-export default Order;
+const mapDispatchToProps = dispatch => {
+  return {
+    onLoadTrade: (trade) => dispatch(actions.loadTrade(trade))
+  };
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(Order);

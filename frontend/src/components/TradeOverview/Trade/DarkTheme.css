@@ -1,0 +1,10 @@
+.dark {
+background: #303030;
+}
+.dark .react-stockcharts-tooltip {
+  fill: white;
+}
+
+.dark .react-stockcharts-tooltip-label {
+  fill: yellow;
+}

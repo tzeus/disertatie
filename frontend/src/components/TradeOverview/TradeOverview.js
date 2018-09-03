@@ -5,7 +5,7 @@ import TradeList from './TradeList/TradeList';
 import Trade from './Trade/Trade';
 import TradeDetails from './TradeDetails/TradeDetails';
 import allTrades from '../../assets/trades.json';
-
+import { connect } from 'react-redux';
 class TradeOverview extends Component {
 
 
@@ -31,4 +31,18 @@ class TradeOverview extends Component {
   }
 }
 
-export default TradeOverview;
+const mapStateToProps = (state) => {
+  return {
+    trades: state.trades,
+    trade: state.trade
+  };
+}
+
+// const mapDispatchToProps = dispatch => {
+// return {
+//   // onTradeClick: () => dispatch({type: 'LOAD_TRADE'})
+// };
+// }
+
+
+export default connect(mapStateToProps)(TradeOverview);

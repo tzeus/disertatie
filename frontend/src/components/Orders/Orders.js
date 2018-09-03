@@ -1,38 +1,15 @@
 import React, { Component } from 'react';
-import allOrders from '../../assets/orders.json';
 import classes from './Orders.css';
 import Auxiliary from '../../hoc/Auxiliary';
 import Order from './../Order/Order';
+import { connect } from 'react-redux';
+import * as actions from '../../store/actions/action';
+
 
 class Orders extends Component {
-  constructor() {
-    super();
-    this.state = {
-      orders: []
-    }
-  }
-
+  
   componentDidMount() {
-    let orders = allOrders.allOrders.map((order) => {
-      return (
-        <Order
-          id={order.orderId}
-          key={order.orderId}
-          orderId={order.orderId}
-          instrument={order.instrument}
-          units={order.units}
-          side={order.side}
-          type={order.type}
-          takeProfit={order.takeProfit}
-          stopLoss={order.stopLoss}
-          price={order.price}
-          orderState={order.state}
-          fillingTransactionID={order.fillingTransactionID}
-          createTime={order.createTime}
-        />
-      )
-    });
-    this.setState({ orders: orders });
+    
 
   }
 
@@ -53,7 +30,27 @@ class Orders extends Component {
 
   render() {
 
-    let myOrders = allOrders.allOrders.map((order) => {
+    let orders = this.props.orders.map((order) => {
+      return (
+        <Order
+          id={order.orderId}
+          key={order.orderId}
+          orderId={order.orderId}
+          instrument={order.instrument}
+          units={order.units}
+          side={order.side}
+          type={order.type}
+          takeProfit={order.takeProfit}
+          stopLoss={order.stopLoss}
+          price={order.price}
+          orderState={order.state}
+          fillingTransactionID={order.fillingTransactionID}
+          createTime={order.createTime}
+        />
+      )
+    });
+
+    let myOrders = this.props.orders.map((order) => {
       return (
 
         <li key={order.orderId} style={{ backgroundColor: order.state === 'FILLED' ? '#5C9210' : '#944317' }}>
@@ -72,7 +69,7 @@ class Orders extends Component {
             </ul>
           </div>
           <div className={classes.Orders}>
-            {this.state.orders}
+            {orders}
           </div>
         </div>
       </Auxiliary>
@@ -80,6 +77,14 @@ class Orders extends Component {
   }
 }
 
+const mapStateToProps = (state) => {
+  return {
+    orders: state.orders,
+    trade: state.trade
+  };
+}
 
-export default Orders;
+
+
+export default connect(mapStateToProps)(Orders);
 

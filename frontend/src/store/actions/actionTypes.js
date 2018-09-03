@@ -1,0 +1,1 @@
+export const LOAD_TRADE = 'LOAD_TRADE';

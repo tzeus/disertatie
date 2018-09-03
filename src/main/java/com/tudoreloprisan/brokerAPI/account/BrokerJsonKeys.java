@@ -16,7 +16,7 @@ public enum BrokerJsonKeys {
     OPEN_TIME("openTime"), CURRENT_UNITS("currentUnits"), TAKE_PROFIT_ORDER("takeProfitOrder"),
     STOP_LOSS_ORDER("stopLossOrder"), TAKE_PROFIT("takeProfit"), STOP_LOSS("stopLoss"), TRADE_ID_CAPS("tradeID"),
     TRADE("trade"), ORDER_STATE("state"), FINANCING("financing"), INITIAL_MARGIN_REQUIRED("initialMarginRequired"),
-    FILLING_TRANSACTION_ID("fillingTransactionID"), CREATE_TIME("createTime");
+    FILLING_TRANSACTION_ID("fillingTransactionID"), CREATE_TIME("createTime"), VOLUME("volume");
 
 
     private String value;

@@ -1,30 +1,24 @@
 import React, {Component} from 'react';
 import classes from './TradeList.css';
-import allTrades from '../../../assets/trades.json';
+import { connect } from 'react-redux';
+import * as actions from '../../../store/actions/action';
 
 
 class TradeList extends Component{
 
-  state = {
-    trades:[]
-  }
 
     componentDidMount() {
-      let trades = allTrades.allTrades.slice(0);
-      this.setState({ trades: trades });
+     
     }
 
-    loadClickHandler = (tradeId) => {
-      console.log('Clicked trade ' + tradeId);
-    }
   
 
 
 render(){
 
-  let tradeList = this.state.trades.map((trade) => {
+  let tradeList = this.props.trades.map((trade) => {
     return (
-      <li key={trade.tradeId} style={{ backgroundColor: trade.state === 'OPEN' ? '#5C9210' : '#944317' }} onClick={() => this.loadClickHandler(trade.tradeId)}>
+      <li key={trade.tradeId} style={{ backgroundColor: trade.unrealizedPL >= 0 ? '#5C9210' : '#944317' }} onClick={()=>this.props.onTradeLoad(trade)}>
         Trade ID: {trade.tradeId}
       </li>
     )
@@ -41,4 +35,18 @@ render(){
 };
 }
 
-export default TradeList;
+const mapStateToProps = (state) => {
+  return {
+    trade: state.trade,
+    trades: state.trades
+  };
+}
+
+
+const mapDispachToProps = dispatch => {
+  return {
+  onTradeLoad: (trade) => dispatch(actions.loadTrade(trade))
+  }
+}
+
+export default connect(mapStateToProps, mapDispachToProps)(TradeList);

@@ -2,6 +2,9 @@ package com.tudoreloprisan.brokerAPI.marketData;
 
 import java.util.List;
 
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -11,6 +14,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.message.BasicHeader;
 import org.apache.log4j.Logger;
 import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
@@ -93,21 +98,29 @@ public class BrokerHistoricMarketDataProvider implements HistoricMarketDataProvi
 			HttpResponse resp = httpClient.execute(httpGet);
 			String strResp = TradingUtils.responseToString(resp);
 			if (strResp != StringUtils.EMPTY) {
-				Object obj = JSONValue.parse(strResp);
-				JSONObject jsonResp = (JSONObject) obj;
-				JSONArray candlsticks = (JSONArray) jsonResp.get(BrokerJsonKeys.CANDLES.value());
+				JsonObject jsonResp = new GsonBuilder().disableHtmlEscaping().create().fromJson(strResp, JsonObject.class);
+				JsonArray candlestickData = jsonResp.get(BrokerJsonKeys.CANDLES.value()).getAsJsonArray();
 
-				for (Object o : candlsticks) {
-					JSONObject candlestick = (JSONObject) o;
-					JSONObject candlestickPrices = (JSONObject) candlestick.get(BrokerJsonKeys.MIDPOINT.value());
+				for (Object o : candlestickData) {
+					JsonObject candlestick = (JsonObject) o;
+					JsonObject candlestickPrices = (JsonObject) candlestick.get(BrokerJsonKeys.MIDPOINT.value());
 
-					final double openPrice = Double.valueOf((String) candlestickPrices.get(BrokerJsonKeys.OPEN.value()));
-					final double highPrice = Double.valueOf((String) candlestickPrices.get(BrokerJsonKeys.HIGH.value()));
-					final double lowPrice = Double.valueOf((String) candlestickPrices.get(BrokerJsonKeys.LOW.value()));
-					final double closePrice = Double.valueOf((String) candlestickPrices.get(BrokerJsonKeys.CLOSE.value()));
-					DateTime timestamp = DateTime.parse((String) candlestick.get(BrokerJsonKeys.TIME.value()));
+					final double openPrice =  candlestickPrices.get(BrokerJsonKeys.OPEN.value()).getAsDouble();
+					final double highPrice = candlestickPrices.get(BrokerJsonKeys.HIGH.value()).getAsDouble();
+					final double lowPrice = candlestickPrices.get(BrokerJsonKeys.LOW.value()).getAsDouble();
+					final double closePrice = candlestickPrices.get(BrokerJsonKeys.CLOSE.value()).getAsDouble();
+					final long volume = candlestick.get(BrokerJsonKeys.VOLUME.value()).getAsLong();
+
+//					String createTimeAsString = candlestick.get(BrokerJsonKeys.TIME.value()).getAsString();
+//
+//					int lastDot = createTimeAsString.lastIndexOf('.');
+//					createTimeAsString = createTimeAsString.substring(0, lastDot).replace('T', ' ');
+//					DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyy-MM-dd' 'HH:mm:ss");
+//					DateTime createTime = formatter.parseDateTime(createTimeAsString);
+
+					DateTime timestamp = DateTime.parse(candlestick.get(BrokerJsonKeys.TIME.value()).getAsString());
 					CandleStick<String> candle = new CandleStick<String>(openPrice, highPrice, lowPrice, closePrice,
-							timestamp, instrument, granularity);
+							timestamp, instrument, granularity, volume);
 					allCandleSticks.add(candle);
 				}
 			} else {

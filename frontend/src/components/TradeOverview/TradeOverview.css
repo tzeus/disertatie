@@ -1,23 +1,26 @@
-.Wrapper{
+.Wrapper {
   display: grid;
-  grid-template-columns: 150px, 1fr;
-  grid-template-rows: 150px, 1fr;
+  grid-template-columns: 220px 1fr;
+  grid-template-rows: 220px 1fr;
   grid-column-gap: 5px;
   grid-row-gap: 5px;
 }
 
 .Trade {
-grid-column: 2;
-grid-row: 2;
+  max-width: 1160px;
+  grid-column: 2;
+  grid-row: 2;
 }
 
-.TradeDetails{
-margin-top: 20px;  
-grid-column: 2;
-grid-row: 1;
+
+.TradeDetails {
+  margin-top: 20px;
+  grid-column: 2;
+  grid-row: 1;
 }
 
-.TradeList{
-grid-column: 1;
-grid-row: 1/span 2;
+.TradeList {
+  max-width: 200px;
+  grid-column: 1;
+  grid-row: 1/span 2;
 }

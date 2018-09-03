@@ -244,10 +244,10 @@ public class BrokerTradeManagementProvider implements TradeManagementProvider<St
             LOG.info(TradingUtils.executingRequestMsg(httpPut));
             HttpResponse resp = httpClient.execute(httpPut);
             if (resp.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {
-                LOG.info(String.format("Trade %d successfully closed for account %d", tradeId, accountId));
+                LOG.info(String.format("Trade %s successfully closed for account %s", tradeId, accountId));
                 return true;
             } else {
-                LOG.warn(String.format("Trade %d could not be closed. Recd error code %d", tradeId,
+                LOG.warn(String.format("Trade %s could not be closed. Recd error code %s", tradeId,
                         resp.getStatusLine().getStatusCode()));
             }
         } catch (Exception e) {

@@ -46,10 +46,10 @@ const instrument = (props) => {
 
   return (
     <div className={classes.Instrument}>
-      <img width={props.width} height={props.height} src={getCurrencyImage(firstCurrency(props.instrument))}
-        alt={firstCurrency(props.instrument)}></img>
-      <img width={props.width} height={props.height} src={getCurrencyImage(secondCurrency(props.instrument))}
-        alt={secondCurrency(props.instrument)} ></img>
+      <img width={props.width} height={props.height} src={getCurrencyImage(firstCurrency(props.instrument.instrument))}
+        alt={firstCurrency(props.instrument.instrument)}></img>
+      <img width={props.width} height={props.height} src={getCurrencyImage(secondCurrency(props.instrument.instrument))}
+        alt={secondCurrency(props.instrument.instrument)} ></img>
     </div>
   );
 };
