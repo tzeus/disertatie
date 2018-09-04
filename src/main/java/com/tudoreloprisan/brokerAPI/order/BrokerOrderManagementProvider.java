@@ -376,18 +376,20 @@ public class BrokerOrderManagementProvider implements OrderManagementProvider<St
 
         if (order.getStopLoss() != 0.0) {
             JsonObject stopLossJsonObject = new JsonObject();
-            stopLossJsonObject.add(BrokerJsonKeys.PRICE.value(), gson.toJsonTree(order.getStopLoss()));
+            double stopLoss = order.getStopLoss();
+
+            stopLossJsonObject.add(BrokerJsonKeys.PRICE.value(), gson.toJsonTree(Double.toString(stopLoss)));
             jsonOrderBody.add(BrokerJsonKeys.STOP_LOSS_ON_FILL.value(), stopLossJsonObject);
         }
 
         if (order.getTakeProfit() != 0.0) {
             JsonObject takeProfitJsonObject = new JsonObject();
-            takeProfitJsonObject.add(BrokerJsonKeys.PRICE.value(), gson.toJsonTree(order.getTakeProfit()));
+            takeProfitJsonObject.add(BrokerJsonKeys.PRICE.value(), gson.toJsonTree(Double.toString(order.getTakeProfit())));
             jsonOrderBody.add(BrokerJsonKeys.TAKE_PROFIT_ON_FILL.value(), takeProfitJsonObject);
         }
 
         if (order.getType() == OrderType.LIMIT && order.getPrice() != 0.0) {
-            jsonOrderBody.add(BrokerJsonKeys.PRICE.value(), gson.toJsonTree(order.getPrice()));
+            jsonOrderBody.add(BrokerJsonKeys.PRICE.value(), gson.toJsonTree(Double.toString(order.getPrice())));
         }
 
         jsonObject.add(BrokerJsonKeys.ORDER.value(), jsonOrderBody);

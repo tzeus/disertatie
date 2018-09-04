@@ -4,13 +4,13 @@ import Auxiliary from '../../hoc/Auxiliary';
 import Order from './../Order/Order';
 import { connect } from 'react-redux';
 import * as actions from '../../store/actions/action';
+import Axios from 'axios';
 
 
 class Orders extends Component {
   
   componentDidMount() {
-    
-
+    this.props.onInitOrders();
   }
 
   colorOrderByStatus = (orderState) => {
@@ -84,7 +84,15 @@ const mapStateToProps = (state) => {
   };
 }
 
+const mapDispatchToProps = dispatch => {
+  return {
+  onInitOrders: () => {
+    dispatch(actions.initOrders())
+  }
+};
+}
 
 
-export default connect(mapStateToProps)(Orders);
+
+export default connect(mapStateToProps,mapDispatchToProps)(Orders, Axios);
 

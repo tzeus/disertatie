@@ -1,21 +1,5 @@
 {
-  "allOrders": [{
-    "instrument": {
-      "instrument": "USD_CHF",
-      "pip": 0.0,
-      "hash": 499969689
-    },
-    "units": "255",
-    "side": "LONG",
-    "type": "LIMIT",
-    "takeProfit": 0.972,
-    "stopLoss": 0.9689,
-    "orderId": "73",
-    "price": 0.9701,
-    "state": "PENDING",
-    "fillingTransactionID": "",
-    "createTime": "Tue Sep 04 2018 02:47:59 +0300 (EEST)"
-  }, {
+  "allTransactions": [{
     "instrument": {
       "instrument": "USD_CHF",
       "pip": 0.0,

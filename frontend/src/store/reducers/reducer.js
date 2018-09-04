@@ -1,6 +1,7 @@
 import { updateObject } from './../utility';
-import allTrades from '../../assets/trades.json';
-import allOrders from '../../assets/orders.json';
+import allTrades from '../../assets/trades2.json';
+import allTransactions from '../../assets/transactions.json';
+import allOrders from '../../assets/orders2.json';
 import candleData from '../../assets/candleData.json';
 import * as actionTypes from '../actions/actionTypes';
 
@@ -22,25 +23,11 @@ const trades = allTrades.allTrades.slice(0);
 
 const orders = allOrders.allOrders.slice(0);
 
+const transactions = allTransactions.allTransactions.slice(0);
 
 
 const initialState = {
   trade: {
-    // instrument: 'GBP_USD',
-    // side: 'SHORT',
-    // executionPrice: '1.30311',
-    // realizedPL: '0.0000',
-    // unrealizedPL: '2.0396',
-    // marginRequired: '13.2308',
-    // marginUsed: '13.2761',
-    // financing: '0.0154',
-    // tradeId: '48',
-    // tradeState: 'OPEN',
-    // tradeDate: '2018-08-29 23:38:14.00',
-    // amount: '-357',
-    // takeProfit: '0.0',
-    // stopLoss: '0.0'
-
     "tradeId": "48",
     "units": "-357",
     "side": "SHORT",
@@ -70,26 +57,36 @@ const initialState = {
   orders: orders,
   data: data,
   account: {
-    "id": 0, 
-    "totalBalance": 100003.4314, 
-    "unrealisedPnl": -18.1575, 
-    "realisedPnl": 0.0, "marginUsed": 71.2056, 
-    "marginAvailable": 99914.0683, 
-    "netAssetValue": 99985.2739, 
+    "id": 0,
+    "totalBalance": 100003.4314,
+    "unrealisedPnl": -18.1575,
+    "realisedPnl": 0.0, "marginUsed": 71.2056,
+    "marginAvailable": 99914.0683,
+    "netAssetValue": 99985.2739,
     "amountAvailableRatio": 0.999106399663002,
-     "marginRate": 0.02, 
-     "openTrades": 3, 
-     "currency": "EUR", 
-     "accountId": "101-004-9126938-001", 
-     "hash": 956038545
+    "marginRate": 0.02,
+    "openTrades": 3,
+    "currency": "EUR",
+    "accountId": "101-004-9126938-001",
+    "hash": 956038545
   },
   stats: {
 
   },
-  transactions: {
-
-  }
+  transactions: transactions
 }
+
+const setOrders = (state, action ) => {
+  return updateObject(state, {
+    orders: action.orders
+  });
+};
+
+const setTrades = (state, action ) => {
+  return updateObject(state, {
+    trades: action.trades
+  });
+};
 
 const loadTrade = (state, action) => {
   console.log('Entered loadTrade ' + action.trade.tradeId);
@@ -100,6 +97,9 @@ const loadTrade = (state, action) => {
 const reducer = (state = initialState, action) => {
   switch (action.type) {
     case actionTypes.LOAD_TRADE: return loadTrade(state, action);
+    case actionTypes.SET_ORDERS: return setOrders(state, action);
+    case actionTypes.SET_TRADES: return setTrades(state, action);
+
     default:
       return state;
 

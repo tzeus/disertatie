@@ -2,8 +2,9 @@
     height: 800px;
     padding: 40px;
     display: flex;
-    justify-content: space-around;
+    justify-content: space-between;
     flex-flow: row wrap;
+    justify-items: start;
     
   }
 

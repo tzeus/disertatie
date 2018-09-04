@@ -49,7 +49,7 @@ public class BrokerTradeManagementProvider implements TradeManagementProvider<St
 
     String getTradesInfoUrl(String accountId) {
         return this.url + BrokerConstants.ACCOUNTS_RESOURCE + TradingConstants.FWD_SLASH + accountId
-                + BrokerConstants.TRADES_RESOURCE;
+                + BrokerConstants.TRADES_RESOURCE + "?state=" + BrokerConstants.ORDER_STATE_ALL;
     }
 
     String getOpenTradesInfoUrl(String accountId) {
@@ -82,10 +82,17 @@ public class BrokerTradeManagementProvider implements TradeManagementProvider<St
         final double tradeStopLoss = stopLossObject == null ? 0 : stopLossObject.get(BrokerJsonKeys.PRICE.value()).getAsDouble();
         final String state = tradeJsonObject.get(BrokerJsonKeys.ORDER_STATE.value()).getAsString();
         final String realizedPL = tradeJsonObject.get(BrokerJsonKeys.REALIZED_PL.value()).getAsString();
-        final String unRealizedPL = tradeJsonObject.get(BrokerJsonKeys.UNREALIZED_PL.value()).getAsString();
+        final String unRealizedPL;
+        final String marginUsed;
+        if("CLOSED".equals(state)){
+            unRealizedPL = "0";
+            marginUsed = "0";
+        }else {
+            unRealizedPL = tradeJsonObject.get(BrokerJsonKeys.UNREALIZED_PL.value()).getAsString();
+        marginUsed = tradeJsonObject.get(BrokerJsonKeys.MARGIN_USED.value()).getAsString();
+        }
         final String financing = tradeJsonObject.get(BrokerJsonKeys.FINANCING.value()).getAsString();
         final String initialMarginRequired = tradeJsonObject.get(BrokerJsonKeys.INITIAL_MARGIN_REQUIRED.value()).getAsString();
-        final String marginUsed = tradeJsonObject.get(BrokerJsonKeys.MARGIN_USED.value()).getAsString();
 
 
         return new Trade<String, String, String>(tradeId, tradeUnits, tradeSignal, tradeInstrument, dateTime,

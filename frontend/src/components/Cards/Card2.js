@@ -1,11 +1,10 @@
 import React from 'react';
-import card1 from '../../assets/images/card1.png';
-import classes from './Card1.css'
+import classes from './Card2.css'
 
-const card = (props) => (
+const card2 = (props) => (
   <div className={classes.Wrapper}>
     <div className={classes.LeftContent}>
-      <img src={props.image} alt=""></img>
+    STATISTICS
     </div>
     <div className={classes.RightContent}>
       {props.text}
@@ -13,4 +12,4 @@ const card = (props) => (
   </div>
 )
 
-export default card;
+export default card2;

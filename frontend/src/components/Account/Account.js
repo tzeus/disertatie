@@ -25,7 +25,7 @@ class Account extends Component {
         <div className={classes.right}>
 
           <strong>{this.props.account.accountId}</strong><br />
-          <strong>{this.props.account.totalBalance}</strong><br />
+          <strong>{this.props.account.totalBalance} {'\u20AC'}</strong><br />
           <strong>{this.props.account.currency}</strong><br />
           <strong>{this.props.account.openTrades} </strong><br />
           <strong>{this.props.account.marginRate}  </strong><br />
@@ -33,8 +33,8 @@ class Account extends Component {
           <strong>{this.props.account.marginUsed}  </strong><br />
           <strong>{this.props.account.amountAvailableRatio}  </strong><br />
           <strong>{this.props.account.netAssetValue}  </strong><br />
-          <strong>{this.props.account.realisedPnl}  </strong><br />
-          <strong>{this.props.account.unrealisedPnl}  </strong><br />
+          <strong>{this.props.account.realisedPnl} {'\u20AC'}  </strong><br />
+          <strong>{this.props.account.unrealisedPnl} {'\u20AC'}  </strong><br />
 
         </div>
       </div>

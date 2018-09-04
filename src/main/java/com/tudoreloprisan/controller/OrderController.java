@@ -57,10 +57,7 @@ import org.joda.time.format.DateTimeFormat;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 
 @RestController
@@ -119,6 +116,16 @@ public class OrderController {
 
         }
 
+        JsonObject orders2 = new JsonObject();
+        orders2.add("allOrders", asJsonArray);
+        try (FileWriter file = new FileWriter("/frontend/src/assets/orders2.json")) {
+
+            file.write(gson.toJson(orders2));
+            file.flush();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 //        String tsvDataFromCandlestickDate = getTsvDataFromCandlestickDate(asJsonArray, instrument, granularity, amount);
 //         String candlestickData = gson.toJson(candlesForInstrument);
 
@@ -127,6 +134,7 @@ public class OrderController {
     }
 
     @RequestMapping(value = "/getOrders", method = RequestMethod.GET)
+    @CrossOrigin(origins = "*") //TODO CHANGE ME
     public String getOrders() {
         OrderManagementProvider<String, String, String> orderManagementProvider = new BrokerOrderManagementProvider(url, accessToken, accountDataProvider);
 
@@ -142,6 +150,17 @@ public class OrderController {
             String dateAsString = new ArrayList<Order>(orders).get(i).getCreateTime().toString(DateTimeFormat.forPattern("EEE MMM dd yyyy HH:mm:ss Z' ('z')'"));
             jsonArray.get(i).getAsJsonObject().addProperty("createTime", dateAsString);
         }
+
+//        JsonObject orders2 = new JsonObject();
+//        orders2.add("allOrders", jsonArray);
+//        try (FileWriter file = new FileWriter("frontend/src/assets/orders2.json")) {
+//
+//            file.write(gson.toJson(orders2));
+//            file.flush();
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
         return gson.toJson(jsonArray);
     }
 
@@ -187,6 +206,7 @@ public class OrderController {
     }
 
     @RequestMapping(value = "/getTrades", method = RequestMethod.GET)
+    @CrossOrigin(origins = "*") //TODO CHANGE ME
     public String getTrades() {
         BrokerTradeManagementProvider brokerTradeManagementProvider = new BrokerTradeManagementProvider(url, accessToken);
         Collection<Trade<String, String, String>> tradesForAccount = brokerTradeManagementProvider.getTradesForAccount(accountId);
@@ -197,6 +217,17 @@ public class OrderController {
             jsonArray.get(i).getAsJsonObject().addProperty("tradeDate", new ArrayList<Trade>(tradesForAccount).get(i).getTradeDate().toString());
         }
         String tradeJson = gson.toJson(trades);
+
+//        JsonObject trades2 = new JsonObject();
+//        trades2.add("allTrades", jsonArray);
+//        try (FileWriter file = new FileWriter("frontend/src/assets/trades2.json")) {
+//
+//            file.write(gson.toJson(trades2));
+//            file.flush();
+//
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
         return gson.toJson(jsonArray);
 
@@ -390,27 +421,26 @@ public class OrderController {
             final ArrayList<Boolean> isFirstLine = new ArrayList<>();
             isFirstLine.add(true);
 
-            dos.println("date\topen\thigh\tlow\tclose\tvolume\t");
-            tsvData.append("date\topen\thigh\tlow\tclose\tvolume\t").append(System.lineSeparator());
+            dos.println("date,open,close,");
+            tsvData.append("date,open,close,").append(System.lineSeparator());
             candlestickData.forEach(jsonElement -> {
                 JsonObject candleStickJsonObject = jsonElement.getAsJsonObject();
                 String openPrice = candleStickJsonObject.get("openPrice").getAsString();
-                String highPrice = candleStickJsonObject.get("highPrice").getAsString();
-                String lowPrice = candleStickJsonObject.get("lowPrice").getAsString();
+//                String highPrice = candleStickJsonObject.get("highPrice").getAsString();
+//                String lowPrice = candleStickJsonObject.get("lowPrice").getAsString();
                 String closePrice = candleStickJsonObject.get("closePrice").getAsString();
 //                String candleGranularity = candleStickJsonObject.get("candleGranularity").getAsString();
                 JsonObject chronology = candleStickJsonObject.get("eventDate").getAsJsonObject();
                 String time = chronology.get("iMillis").getAsString();
-                String volume = candleStickJsonObject.get("volume").getAsString();
+//                String volume = candleStickJsonObject.get("volume").getAsString();
                 //logic here
-                dos.print(time + "\t");
-                dos.print(openPrice + "\t");
-                dos.print(highPrice + "\t");
-                dos.print(lowPrice + "\t");
-                dos.print(closePrice + "\t");
-                dos.print(volume + "\t");
-                tsvData.append(time).append('\t').append(openPrice).append('\t').append(highPrice).append('\t').append(lowPrice).append('\t').append(closePrice).append('\t').append(volume).append('\t')
-                .append(System.lineSeparator());
+                dos.print(time + ",");
+                dos.print(openPrice + ",");
+//                dos.print(highPrice + "\t");
+//                dos.print(lowPrice + "\t");
+                dos.print(closePrice + ",");
+//                dos.print(volume + "\t");
+                tsvData.append(time).append(',').append(openPrice).append(',').append(closePrice).append(System.lineSeparator());
                 dos.println();
                 isFirstLine.add(0, false);
             });
