@@ -65,12 +65,6 @@ import org.springframework.web.bind.annotation.*;
 public class OrderController {
 
     //~ ----------------------------------------------------------------------------------------------------------------
-    //~ Static fields/initializers 
-    //~ ----------------------------------------------------------------------------------------------------------------
-
-    private static final Logger LOG = Logger.getLogger(OrderController.class);
-
-    //~ ----------------------------------------------------------------------------------------------------------------
     //~ Instance fields 
     //~ ----------------------------------------------------------------------------------------------------------------
 
@@ -89,49 +83,6 @@ public class OrderController {
     //~ ----------------------------------------------------------------------------------------------------------------
     //~ Methods 
     //~ ----------------------------------------------------------------------------------------------------------------
-
-    @RequestMapping(value = "/getHistData", method = RequestMethod.GET)
-    public String getHistoricData(@RequestParam(value = "instrument") String instrument,
-        @RequestParam(value = "granularity") String granularity,
-        @RequestParam(value = "amount") String amount) {
-        HistoricMarketDataProvider<String> historicMarketDataProvider = new BrokerHistoricMarketDataProvider(url, accessToken);
-        TradeableInstrument<String> usdchf = new TradeableInstrument<String>(instrument);
-        List<CandleStick<String>> candlesForInstrument = historicMarketDataProvider.getCandleSticks(usdchf, CandleStickGranularity.valueOf(granularity), Integer.parseInt(amount));
-        for (CandleStick<String> candle : candlesForInstrument) {
-            LOG.info(candle);
-        }
-
-        //TODO -> Output for Front-End
-        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
-        JsonArray asJsonArray = new GsonBuilder().disableHtmlEscaping().create().toJsonTree(candlesForInstrument).getAsJsonArray();
-
-        for (int i = 0; i < asJsonArray.size(); i++) {
-
-            String dateAsString = new ArrayList<CandleStick>(candlesForInstrument).get(i).getEventDate().toString(DateTimeFormat.forPattern("EEE MMM dd yyyy HH:mm:ss Z' ('z')'"));
-            asJsonArray.get(i).getAsJsonObject().addProperty("eventDate", dateAsString);
-            asJsonArray.get(i).getAsJsonObject().remove("instrument");
-            asJsonArray.get(i).getAsJsonObject().remove("candleGranularity");
-            asJsonArray.get(i).getAsJsonObject().remove("hash");
-            asJsonArray.get(i).getAsJsonObject().remove("toStr");
-
-        }
-
-        JsonObject orders2 = new JsonObject();
-        orders2.add("allOrders", asJsonArray);
-        try (FileWriter file = new FileWriter("/frontend/src/assets/orders2.json")) {
-
-            file.write(gson.toJson(orders2));
-            file.flush();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-//        String tsvDataFromCandlestickDate = getTsvDataFromCandlestickDate(asJsonArray, instrument, granularity, amount);
-//         String candlestickData = gson.toJson(candlesForInstrument);
-
-        return gson.toJson(asJsonArray);
-
-    }
 
     @RequestMapping(value = "/getOrders", method = RequestMethod.GET)
     @CrossOrigin(origins = "*") //TODO CHANGE ME

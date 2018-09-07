@@ -5,7 +5,8 @@ import Order from './../Order/Order';
 import { connect } from 'react-redux';
 import * as actions from '../../store/actions/action';
 import Axios from 'axios';
-
+import Button from '@material-ui/core/Button';
+import { Link } from 'react-router-dom';
 
 class Orders extends Component {
   
@@ -61,6 +62,7 @@ class Orders extends Component {
 
     return (
       <Auxiliary>
+        <Button component={Link} to="/trades">Go to TRADES</Button>
         <div className={classes.Wrapper}>
           <div className={classes.NavigationItems}>
             <ul>
