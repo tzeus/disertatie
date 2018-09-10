@@ -32,6 +32,7 @@ import org.apache.log4j.Logger;
 
 import org.joda.time.format.DateTimeFormat;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.web.bind.annotation.*;
@@ -59,6 +60,8 @@ public class PriceController {
     private String accessToken; // =env.getProperty("broker.accessToken");
     @Value("${broker.accountId}")
     private String accountId; // =env.getProperty("broker.accountId");
+    @Autowired
+    private HistoricalDataRepository historicalDataRepository;
 
     //~ ----------------------------------------------------------------------------------------------------------------
     //~ Methods 
@@ -85,9 +88,7 @@ public class PriceController {
         HistoricMarketDataProvider<String> historicMarketDataProvider = new BrokerHistoricMarketDataProvider(url, accessToken);
         TradeableInstrument<String> usdchf = new TradeableInstrument<String>(instrument);
         List<CandleStick<String>> candlesForInstrument = historicMarketDataProvider.getCandleSticks(usdchf, CandleStickGranularity.valueOf(granularity), Integer.parseInt(amount));
-        HistoricalDataRepository historicalDataRepository;
 
-//        historicalDataRepository.saveAll()
         for (CandleStick<String> candle : candlesForInstrument) {
             LOG.info(candle);
         }
@@ -119,6 +120,38 @@ public class PriceController {
         }
 //        String tsvDataFromCandlestickDate = getTsvDataFromCandlestickDate(asJsonArray, instrument, granularity, amount);
 //         String candlestickData = gson.toJson(candlesForInstrument);
+
+        return gson.toJson(asJsonArray);
+
+    }
+
+    @RequestMapping(value = "/getHistoricalData", method = RequestMethod.GET)
+    public String getHistoricalData(@RequestParam(value = "instrument") String instrument,
+        @RequestParam(value = "granularity") String granularity,
+        @RequestParam(value = "amount") String amount) {
+        HistoricMarketDataProvider<String> historicMarketDataProvider = new BrokerHistoricMarketDataProvider(url, accessToken);
+        TradeableInstrument<String> usdchf = new TradeableInstrument<String>(instrument);
+        List<HistoricalData> historicalDataForInstrument = historicMarketDataProvider.getHistoricalDataForInstrument(usdchf, CandleStickGranularity.valueOf(granularity), Integer.parseInt(amount));
+
+        historicalDataRepository.saveAll(historicalDataForInstrument);
+        for (HistoricalData data : historicalDataForInstrument) {
+            LOG.info(data);
+        }
+
+        //TODO -> Output for Front-End
+        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+        JsonArray asJsonArray = new GsonBuilder().disableHtmlEscaping().create().toJsonTree(historicalDataForInstrument).getAsJsonArray();
+
+//        for (int i = 0; i < asJsonArray.size(); i++) {
+//
+//            String dateAsString = new ArrayList<>(historicalDataForInstrument).get(i).getTimestamp().toString(DateTimeFormat.forPattern("EEE MMM dd yyyy HH:mm:ss Z' ('z')'"));
+//            asJsonArray.get(i).getAsJsonObject().addProperty("eventDate", dateAsString);
+//            asJsonArray.get(i).getAsJsonObject().remove("instrument");
+//            asJsonArray.get(i).getAsJsonObject().remove("candleGranularity");
+//            asJsonArray.get(i).getAsJsonObject().remove("hash");
+//            asJsonArray.get(i).getAsJsonObject().remove("toStr");
+//
+//        }
 
         return gson.toJson(asJsonArray);
 

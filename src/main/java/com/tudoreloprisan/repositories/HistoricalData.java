@@ -8,7 +8,12 @@ package com.tudoreloprisan.repositories;
 
 import java.sql.Timestamp;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import javax.persistence.*;
+
+import com.tudoreloprisan.tradingAPI.marketData.CandleStick;
 
 import lombok.Data;
 
@@ -25,19 +30,52 @@ public class HistoricalData {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
-    private Float mid_h;
-    private Float mid_l;
-    private Float mid_o;
-    private Float mid_c;
-    private Float ask_l;
-    private Float ask_o;
-    private Float ask_c;
-    private Float ask_h;
-    private Float bid_o;
-    private Float bid_c;
-    private Float bid_l;
-    private Float bid_h;
+    private Double mid_h;
+    private Double mid_l;
+    private Double mid_o;
+    private Double mid_c;
+    private Double ask_l;
+    private Double ask_o;
+    private Double ask_c;
+    private Double ask_h;
+    private Double bid_o;
+    private Double bid_c;
+    private Double bid_l;
+    private Double bid_h;
     private String instrument;
-    private Timestamp timestamp;
+    private Long timestamp;
+    private Long volume;
+    private String granularity;
 
+    //~ ----------------------------------------------------------------------------------------------------------------
+    //~ Constructors 
+    //~ ----------------------------------------------------------------------------------------------------------------
+
+    public HistoricalData(Double mid_h, Double mid_l, Double mid_o, Double mid_c, Double ask_l, Double ask_o, Double ask_c, Double ask_h, Double bid_o, Double bid_c, Double bid_l, Double bid_h, String instrument,
+        Long timestamp, Long volume, String granularity) {
+        this.mid_h = mid_h;
+        this.mid_l = mid_l;
+        this.mid_o = mid_o;
+        this.mid_c = mid_c;
+        this.ask_l = ask_l;
+        this.ask_o = ask_o;
+        this.ask_c = ask_c;
+        this.ask_h = ask_h;
+        this.bid_o = bid_o;
+        this.bid_c = bid_c;
+        this.bid_l = bid_l;
+        this.bid_h = bid_h;
+        this.instrument = instrument;
+        this.timestamp = timestamp;
+        this.volume = volume;
+        this.granularity = granularity;
+    }
+
+    //~ ----------------------------------------------------------------------------------------------------------------
+    //~ Methods 
+    //~ ----------------------------------------------------------------------------------------------------------------
+
+    public Long getTimestamp() {
+        return timestamp;
+    }
 }
