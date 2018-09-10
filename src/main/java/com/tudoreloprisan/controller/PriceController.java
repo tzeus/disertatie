@@ -20,6 +20,8 @@ import com.google.gson.JsonObject;
 
 import com.tudoreloprisan.brokerAPI.market.BrokerCurrentPriceInfoProvider;
 import com.tudoreloprisan.brokerAPI.marketData.BrokerHistoricMarketDataProvider;
+import com.tudoreloprisan.repositories.HistoricalData;
+import com.tudoreloprisan.repositories.HistoricalDataRepository;
 import com.tudoreloprisan.tradingAPI.instruments.TradeableInstrument;
 import com.tudoreloprisan.tradingAPI.market.Price;
 import com.tudoreloprisan.tradingAPI.marketData.CandleStick;
@@ -83,6 +85,9 @@ public class PriceController {
         HistoricMarketDataProvider<String> historicMarketDataProvider = new BrokerHistoricMarketDataProvider(url, accessToken);
         TradeableInstrument<String> usdchf = new TradeableInstrument<String>(instrument);
         List<CandleStick<String>> candlesForInstrument = historicMarketDataProvider.getCandleSticks(usdchf, CandleStickGranularity.valueOf(granularity), Integer.parseInt(amount));
+        HistoricalDataRepository historicalDataRepository;
+
+//        historicalDataRepository.saveAll()
         for (CandleStick<String> candle : candlesForInstrument) {
             LOG.info(candle);
         }

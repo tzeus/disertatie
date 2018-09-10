@@ -8,8 +8,7 @@ package com.tudoreloprisan.repositories;
 
 import java.sql.Timestamp;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import lombok.Data;
 
@@ -23,6 +22,9 @@ public class HistoricalData {
     //~ Instance fields 
     //~ ----------------------------------------------------------------------------------------------------------------
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
     private Float mid_h;
     private Float mid_l;
     private Float mid_o;
