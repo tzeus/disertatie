@@ -156,4 +156,41 @@ public class PriceController {
         return gson.toJson(asJsonArray);
 
     }
+
+    @RequestMapping(value = "/getHistoricalDataBetweenDates", method = RequestMethod.GET)
+    public String getHistoricalDataBetweenDates(@RequestParam(value = "instrument") String instrument,
+        @RequestParam(value = "granularity") String granularity,
+        @RequestParam(value = "startDate") String startDate,
+        @RequestParam(value = "endDate") String endDate) {
+        BrokerHistoricMarketDataProvider historicMarketDataProvider = new BrokerHistoricMarketDataProvider(url, accessToken);
+        TradeableInstrument<String> usdchf = new TradeableInstrument<>(instrument);
+        List<HistoricalData> historicalDataForInstrumentMonthly = new ArrayList<>();
+/*
+ * startDate=2018-08-01T15%3A00%3A00.000000000Z&endDate=2018-08-02T15%3A00%3A00.000000000Z
+ */
+        String startDateX = "2018-08-02T00%3A00%3A00.000000000Z";
+        String endDateX = "2018-08-02T23%3A59%3A59.000000000Z";
+        for (int i = 2; i < 62; i++) {
+            startDateX = startDateX.replace("0" + i, "");
+            endDateX = endDateX.replace("0" + i, "");
+            if (startDateX.contains("08") && startDateX.contains("31")) {
+                startDateX = startDateX.replace("08", "09");
+                endDateX = endDateX.replace("08", "09");
+            }
+            historicalDataForInstrumentMonthly.addAll(historicMarketDataProvider.getHistoricalDataForInstrumentBetweenDates(usdchf, CandleStickGranularity.valueOf(granularity), startDate, endDate));
+        }
+        List<HistoricalData> historicalDataForInstrument = historicMarketDataProvider.getHistoricalDataForInstrumentBetweenDates(usdchf, CandleStickGranularity.valueOf(granularity), startDate, endDate);
+
+        historicalDataRepository.saveAll(historicalDataForInstrument);
+//        for (HistoricalData data : historicalDataForInstrument) {
+//            LOG.info(data);
+//        }
+
+        //TODO -> Output for Front-End
+        Gson gson = new GsonBuilder().disableHtmlEscaping().create();
+        JsonArray asJsonArray = new GsonBuilder().disableHtmlEscaping().create().toJsonTree(historicalDataForInstrument).getAsJsonArray();
+
+        return gson.toJson(asJsonArray);
+
+    }
 }

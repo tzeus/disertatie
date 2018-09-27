@@ -34,12 +34,6 @@ import org.apache.http.message.BasicHeader;
 import org.apache.log4j.Logger;
 
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 
 
 public class BrokerHistoricMarketDataProvider implements HistoricMarketDataProvider<String> {
@@ -88,6 +82,11 @@ public class BrokerHistoricMarketDataProvider implements HistoricMarketDataProvi
         return getHistoricalData(instrument, getCountUrlForAllPricePoints(instrument, granularity, count), granularity);
     }
 
+    @Override
+    public List<HistoricalData> getHistoricalDataForInstrumentBetweenDates(TradeableInstrument<String> instrument, CandleStickGranularity granularity, String startDate, String endDate) {
+        return getHistoricalData(instrument, getCountUrlForAllPricePointsBetweenDates(instrument, granularity, startDate, endDate), granularity);
+    }
+
     String getFromToUrl(TradeableInstrument<String> instrument, CandleStickGranularity granularity, DateTime from, DateTime to) {
         return String.format("%s%s%s%s%s?granularity=%s&alignmentTimezone=%s&from=%s&dailyAlignment=0&to=%s&price=M", this.url, BrokerConstants.INSTRUMENTS_RESOURCE_FOR_CANDLES, TradingConstants.FWD_SLASH,
             instrument.getInstrument(), BrokerConstants.CANDLES_RESOURCE, granularity.name(), tzGMT, from.toString(), to.toString());
@@ -106,6 +105,11 @@ public class BrokerHistoricMarketDataProvider implements HistoricMarketDataProvi
     String getCountUrl(TradeableInstrument<String> instrument, CandleStickGranularity granularity, int count) {
         return String.format("%s%s%s%s%s?granularity=%s&alignmentTimezone=%s&dailyAlignment=0&price=M&count=%d", this.url, BrokerConstants.INSTRUMENTS_RESOURCE_FOR_CANDLES, TradingConstants.FWD_SLASH,
             instrument.getInstrument(), BrokerConstants.CANDLES_RESOURCE, granularity.name(), tzGMT, count);
+    }
+
+    String getCountUrlForAllPricePointsBetweenDates(TradeableInstrument<String> instrument, CandleStickGranularity granularity, String startDate, String endDate) {
+        return String.format("%s%s%s%s%s?granularity=%s&alignmentTimezone=%s&dailyAlignment=0&price=%s&from=%s&to=%s", this.url, BrokerConstants.INSTRUMENTS_RESOURCE_FOR_CANDLES, TradingConstants.FWD_SLASH,
+            instrument.getInstrument(), BrokerConstants.CANDLES_RESOURCE, granularity.name(), tzGMT, BrokerConstants.BID_ASK_MID_CANDLESTICKS, startDate, endDate);
     }
 
     String getCountUrlForAllPricePoints(TradeableInstrument<String> instrument, CandleStickGranularity granularity, int count) {

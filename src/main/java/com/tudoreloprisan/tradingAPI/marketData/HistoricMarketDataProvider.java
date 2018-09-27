@@ -25,4 +25,6 @@ public interface HistoricMarketDataProvider<T> {
     List<CandleStick<T>> getCandleSticks(TradeableInstrument<T> instrument, CandleStickGranularity granularity, int count);
 
     List<HistoricalData> getHistoricalDataForInstrument(TradeableInstrument<String> instrument, CandleStickGranularity granularity, int count);
+
+    List<HistoricalData> getHistoricalDataForInstrumentBetweenDates(TradeableInstrument<String> instrument, CandleStickGranularity granularity, String startDate, String endDate);
 }
