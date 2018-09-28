@@ -171,7 +171,7 @@ public class PriceController {
         DateTime startDateTimeFromRegularDateTime = DateTimeUtil.getDateTimeFromRegularDateTime(startDate);
         DateTime endDateTimeFromRegularDateTime = DateTimeUtil.getDateTimeFromRegularDateTime(endDate);
 
-        for (int i = 0; i < 29; i++) {
+        for (int i = 0; i < 30; i++) {
             startDateTimeFromRegularDateTime = startDateTimeFromRegularDateTime.plusDays(1);
             endDateTimeFromRegularDateTime = endDateTimeFromRegularDateTime.plusDays(1);
 
