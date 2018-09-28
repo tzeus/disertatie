@@ -168,12 +168,9 @@ public class PriceController {
         TradeableInstrument<String> usdchf = new TradeableInstrument<>(instrument);
         List<HistoricalData> historicalDataForInstrumentMonthly = new ArrayList<>();
 
-        DateTime startDateTimeFromRegularDateTime = DateTimeUtil.getDateTimeFromRegularDateTime(startDate);
-        DateTime endDateTimeFromRegularDateTime = DateTimeUtil.getDateTimeFromRegularDateTime(endDate);
-
         for (int i = 0; i < 30; i++) {
-            startDateTimeFromRegularDateTime = startDateTimeFromRegularDateTime.plusDays(1);
-            endDateTimeFromRegularDateTime = endDateTimeFromRegularDateTime.plusDays(1);
+            DateTime startDateTimeFromRegularDateTime = DateTimeUtil.getDateTimeFromRegularDateTime(startDate).plusDays(i);
+            DateTime endDateTimeFromRegularDateTime = DateTimeUtil.getDateTimeFromRegularDateTime(endDate).plusDays(i);
 
 
             String startDateAsString = DateTimeUtil.getDateTimeAsStringFromRegularDateTime(startDateTimeFromRegularDateTime.toString());
