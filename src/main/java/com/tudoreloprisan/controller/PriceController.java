@@ -1,8 +1,8 @@
 /**
- * Copyright Murex S.A.S., 2003-2018. All Rights Reserved.
- * <p>
- * This software program is proprietary and confidential to Murex S.A.S and its affiliates ("Murex") and, without limiting the generality of the foregoing reservation of rights, shall not be accessed, used, reproduced or distributed without the
- * express prior written consent of Murex and subject to the applicable Murex licensing terms. Any modification or removal of this copyright notice is expressly prohibited.
+ *  Copyright Murex S.A.S., 2003-2018. All Rights Reserved.
+ * 
+ *  This software program is proprietary and confidential to Murex S.A.S and its affiliates ("Murex") and, without limiting the generality of the foregoing reservation of rights, shall not be accessed, used, reproduced or distributed without the
+ *  express prior written consent of Murex and subject to the applicable Murex licensing terms. Any modification or removal of this copyright notice is expressly prohibited.
  */
 package com.tudoreloprisan.controller;
 
@@ -27,8 +27,8 @@ import com.tudoreloprisan.tradingAPI.market.Price;
 import com.tudoreloprisan.tradingAPI.marketData.CandleStick;
 import com.tudoreloprisan.tradingAPI.marketData.CandleStickGranularity;
 import com.tudoreloprisan.tradingAPI.marketData.HistoricMarketDataProvider;
-
 import com.tudoreloprisan.util.DateTimeUtil;
+
 import org.apache.log4j.Logger;
 
 import org.joda.time.DateTime;
@@ -85,8 +85,8 @@ public class PriceController {
 
     @RequestMapping(value = "/getHistData", method = RequestMethod.GET)
     public String getHistoricData(@RequestParam(value = "instrument") String instrument,
-                                  @RequestParam(value = "granularity") String granularity,
-                                  @RequestParam(value = "amount") String amount) {
+        @RequestParam(value = "granularity") String granularity,
+        @RequestParam(value = "amount") String amount) {
         HistoricMarketDataProvider<String> historicMarketDataProvider = new BrokerHistoricMarketDataProvider(url, accessToken);
         TradeableInstrument<String> usdchf = new TradeableInstrument<String>(instrument);
         List<CandleStick<String>> candlesForInstrument = historicMarketDataProvider.getCandleSticks(usdchf, CandleStickGranularity.valueOf(granularity), Integer.parseInt(amount));
@@ -112,7 +112,7 @@ public class PriceController {
 
         JsonObject orders2 = new JsonObject();
         orders2.add("allOrders", asJsonArray);
-        try (FileWriter file = new FileWriter("/frontend/src/assets/orders2.json")) {
+        try(FileWriter file = new FileWriter("/frontend/src/assets/orders2.json")) {
 
             file.write(gson.toJson(orders2));
             file.flush();
@@ -129,8 +129,8 @@ public class PriceController {
 
     @RequestMapping(value = "/getHistoricalData", method = RequestMethod.GET)
     public String getHistoricalData(@RequestParam(value = "instrument") String instrument,
-                                    @RequestParam(value = "granularity") String granularity,
-                                    @RequestParam(value = "amount") String amount) {
+        @RequestParam(value = "granularity") String granularity,
+        @RequestParam(value = "amount") String amount) {
         HistoricMarketDataProvider<String> historicMarketDataProvider = new BrokerHistoricMarketDataProvider(url, accessToken);
         TradeableInstrument<String> usdchf = new TradeableInstrument<String>(instrument);
         List<HistoricalData> historicalDataForInstrument = historicMarketDataProvider.getHistoricalDataForInstrument(usdchf, CandleStickGranularity.valueOf(granularity), Integer.parseInt(amount));
@@ -161,9 +161,9 @@ public class PriceController {
 
     @RequestMapping(value = "/getHistoricalDataBetweenDates", method = RequestMethod.GET)
     public String getHistoricalDataBetweenDates(@RequestParam(value = "instrument") String instrument,
-                                                @RequestParam(value = "granularity") String granularity,
-                                                @RequestParam(value = "startDate") String startDate,
-                                                @RequestParam(value = "endDate") String endDate) {
+        @RequestParam(value = "granularity") String granularity,
+        @RequestParam(value = "startDate") String startDate,
+        @RequestParam(value = "endDate") String endDate) {
         BrokerHistoricMarketDataProvider historicMarketDataProvider = new BrokerHistoricMarketDataProvider(url, accessToken);
         TradeableInstrument<String> usdchf = new TradeableInstrument<>(instrument);
         List<HistoricalData> historicalDataForInstrumentMonthly = new ArrayList<>();
@@ -172,15 +172,14 @@ public class PriceController {
             DateTime startDateTimeFromRegularDateTime = DateTimeUtil.getDateTimeFromRegularDateTime(startDate).plusDays(i);
             DateTime endDateTimeFromRegularDateTime = DateTimeUtil.getDateTimeFromRegularDateTime(endDate).plusDays(i);
 
-
             String startDateAsString = DateTimeUtil.getDateTimeAsStringFromRegularDateTime(startDateTimeFromRegularDateTime.toString());
             String endDateAsString = DateTimeUtil.getDateTimeAsStringFromRegularDateTime(endDateTimeFromRegularDateTime.toString());
 
             historicalDataForInstrumentMonthly.addAll(historicMarketDataProvider.getHistoricalDataForInstrumentBetweenDates(usdchf, CandleStickGranularity.valueOf(granularity), startDateAsString, endDateAsString));
         }
 
-
         historicalDataRepository.saveAll(historicalDataForInstrumentMonthly);
+        LOG.info("Done adding info in DB");
 //        for (HistoricalData data : historicalDataForInstrument) {
 //            LOG.info(data);
 //        }
