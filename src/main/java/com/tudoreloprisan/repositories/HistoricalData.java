@@ -6,14 +6,7 @@
  */
 package com.tudoreloprisan.repositories;
 
-import java.sql.Timestamp;
-
-import java.util.ArrayList;
-import java.util.Collection;
-
 import javax.persistence.*;
-
-import com.tudoreloprisan.tradingAPI.marketData.CandleStick;
 
 import lombok.Data;
 
